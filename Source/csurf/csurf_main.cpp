@@ -39,6 +39,8 @@ bool (*CSurf_GetTouchState)(MediaTrack* trackid, int isPan);
 void (*CSurf_SetAutoMode)(int mode, IReaperControlSurface* ignoresurf);
 void (*CSurf_SetPlayState)(bool play, bool pause, bool rec, IReaperControlSurface* ignoresurf);
 void (*CSurf_SetRepeatState)(bool rep, IReaperControlSurface* ignoresurf);
+int (*GetSetTrackGroupMembership)(MediaTrack* tr, const char* groupname, unsigned int setmask, unsigned int setvalue);
+int (*GetSetTrackGroupMembershipHigh)(MediaTrack* tr, const char* groupname, unsigned int setmask, unsigned int setvalue);
 
 // these are called by our surfaces, and actually update the project
 double (*CSurf_OnVolumeChange)(MediaTrack* trackid, double volume, bool relative);
@@ -218,6 +220,10 @@ extern "C"
 			IMPAPI(get_config_var)
 			IMPAPI(projectconfig_var_getoffs);
 			IMPAPI(projectconfig_var_addr);
+
+			IMPAPI(GetSetTrackGroupMembership);
+			IMPAPI(GetSetTrackGroupMembershipHigh);
+
 		if (errcnt) return 0;
 
 		int sztmp;

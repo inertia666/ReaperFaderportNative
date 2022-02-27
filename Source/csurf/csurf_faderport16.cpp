@@ -22,6 +22,7 @@ static int g_doprevnext[2]{ -1,-1 };
 
 static VirtualSurface g_vs_busview;
 static VirtualSurface g_vs_allview;
+static VirtualSurface g_vs_vcaview;
 static VirtualSurface* g_vs_currentview;
 
 #pragma region midi
@@ -51,6 +52,12 @@ void CSurf_Faderport::OnMidiEvent(MIDI_event_t* evt) {
 
 	if (isBusEvt(evt)) {
 		SetBusState();
+		return;
+	}
+
+
+	if (isVCAEvt(evt)) {
+		SetVCAState();
 		return;
 	}
 
@@ -234,6 +241,15 @@ bool CSurf_Faderport::isBusEvt(MIDI_event_t* evt) {
 
 	return (midi_code == B_BUS);
 }
+
+bool CSurf_Faderport::isVCAEvt(MIDI_event_t* evt) {
+	if (!m_Functions.isBtn(evt)) return false;
+
+	int midi_code = evt->midi_message[1];
+
+	return (midi_code == B_VCA);
+}
+
 
 bool CSurf_Faderport::isAllEvt(MIDI_event_t* evt) {
 	if (!m_Functions.isBtn(evt)) return false;
@@ -703,6 +719,11 @@ void CSurf_Faderport::SetBusState() {
 	ClearCaches();
 }
 
+void CSurf_Faderport::SetVCAState() {
+	m_surfaceState.ToggleVCAView();
+	ClearCaches();
+}
+
 #pragma endregion midi
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -778,10 +799,14 @@ void CSurf_Faderport::DoPrevNext(int direction) {
 		current_bankchannel_offset += movesize;
 
 		// when moving by bank do not exceed the maximum number of tracks in reaper
-		(!move_by_channel && (current_bankchannel_offset + surface_size > number_reaper_tracks)) ? current_bankchannel_offset = (number_reaper_tracks - surface_size) : false;
+		if (!move_by_channel && (current_bankchannel_offset + surface_size > number_reaper_tracks)) {
+			current_bankchannel_offset = (number_reaper_tracks - surface_size);
+		}
 
 		// when moving by channel do not exceed the maximum number of tracks in reaper
-		(move_by_channel && (current_bankchannel_offset + surface_size > number_reaper_tracks)) ? current_bankchannel_offset -= 1 : false;
+		if (move_by_channel && (current_bankchannel_offset + surface_size > number_reaper_tracks)) {
+			current_bankchannel_offset -= 1;
+		}
 	}
 	else // left
 	{
@@ -790,7 +815,9 @@ void CSurf_Faderport::DoPrevNext(int direction) {
 		current_bankchannel_offset -= movesize;
 
 		// when moving by channel do not go beyond the first track
-		(current_bankchannel_offset - track_offset < 0) ? current_bankchannel_offset = 0 : false;
+		if (current_bankchannel_offset - track_offset < 0) {
+			current_bankchannel_offset = 0;
+		}
 	}
 
 	m_surfaceState.SetPrevNextOffset(current_bankchannel_offset);
@@ -1263,13 +1290,12 @@ void CSurf_Faderport::OnTrackSelection(MediaTrack* track) {
 void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 	int track_id_bus = 0;
 	int track_id_all = 0;
-	int track_id_spread = 0;
-
 	int current_reaper_trackId = 0;
 	int max_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetPrevNextOffset();
 
 	g_vs_busview = {};
 	g_vs_allview = {};
+	g_vs_vcaview = {};
 
 	int prevnext_offset = m_surfaceState.GetPrevNextOffset();
 
@@ -1279,6 +1305,9 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 		MediaTrack* track = CSurf_TrackFromID(prevnext_offset + current_reaper_trackId, m_surfaceState.GetMCPMode());
 
 		if (!track) continue;
+
+		int vca_l_lo = GetSetTrackGroupMembership(track, "VOLUME_VCA_LEAD", 0, 0);
+		int vca_l_hi = GetSetTrackGroupMembershipHigh(track, "VOLUME_VCA_LEAD", 0, 0);
 
 		int trackNumber = (int)GetMediaTrackInfo_Value(track, "IP_TRACKNUMBER");
 		char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
@@ -1295,6 +1324,20 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 			g_vs_busview.display_number[track_id_bus] = track_id_bus;
 			g_vs_busview.number_of_tracks += 1;
 			track_id_bus++;
+
+		
+		}// Vca view
+		else if (vca_l_lo > 0 || vca_l_hi > 0) {
+			if (track_id_bus > 15) continue;
+
+			g_vs_vcaview.media_track[track_id_bus] = track;
+			g_vs_vcaview.media_track_last[track_id_bus] = track;
+			g_vs_vcaview.media_track_number[track_id_bus] = trackNumber;
+			g_vs_vcaview.display_number[track_id_bus] = track_id_bus;
+			g_vs_vcaview.number_of_tracks += 1;
+			track_id_bus++;
+
+			g_vs_currentview = &g_vs_vcaview;
 		}
 		else { // All view vsurface
 			if (track_id_all > 32) continue;
@@ -1305,10 +1348,20 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 			g_vs_allview.display_number[track_id_all] = track_id_all;
 			g_vs_allview.number_of_tracks += 1;
 			track_id_all++;
+
+			g_vs_currentview = &g_vs_allview;
 		}
 	}
 
-	g_vs_currentview = m_surfaceState.GetBusView() ? &g_vs_busview : &g_vs_allview;
+	g_vs_currentview = &g_vs_allview;
+	if (m_surfaceState.GetBusView()) {
+		g_vs_currentview = &g_vs_busview;
+	}
+
+	if (m_surfaceState.GetVCAView()) {
+		g_vs_currentview = &g_vs_vcaview;
+	}
+
 };
 
 bool CSurf_Faderport::isBusTrack(std::string title) {
@@ -1316,6 +1369,11 @@ bool CSurf_Faderport::isBusTrack(std::string title) {
 
 	return (title.find(prefix) != std::string::npos);
 }
+
+//bool CSurf_Faderport::isVCATrack(std::string title) {
+//
+//	return false;
+//}
 
 // End Reaper events
 // --------------------------------------------------------------------------------

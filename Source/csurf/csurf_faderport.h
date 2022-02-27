@@ -116,6 +116,7 @@ public:
 	bool isShiftEvt(MIDI_event_t*);
 	bool isPanEvt(MIDI_event_t*);
 	bool isBusEvt(MIDI_event_t*);
+	bool isVCAEvt(MIDI_event_t*);
 	bool isSave(MIDI_event_t*);
 	bool isRedo(MIDI_event_t*);
 	bool isUndo(MIDI_event_t*);
@@ -158,7 +159,6 @@ public:
 
 	void PrevNext(int); // move surface tracks by channel or bank
 	void DoPrevNext(int);
-	void DoPrevNextSpread(int);
 	void ChannelBank(int);
 
 	void ClearSaveLED();
@@ -167,6 +167,7 @@ public:
 
 	void SetPanState();
 	void SetBusState();
+	void SetVCAState();
 
 	// Reaper poll
 	void SetSurfaceFader(int surface_displayid, double volume, double pan);
@@ -204,8 +205,6 @@ public:
 
 	//
 	void UpdateVirtualLayoutViews();
-	void CSurf_Faderport::UpdateVirtualSpreadLayout();
-	void SpreadCheck();
 	void PrevNextCheck();
 
 	bool isBusTrack(std::string);
@@ -232,6 +231,8 @@ public:
 	int track_fix; // show only the first x number of tracks on the surface
 	int spread; // start surfaces in spread mode
 	int spread_position;
+
+
 };
 
 #endif

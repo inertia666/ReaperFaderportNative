@@ -121,6 +121,11 @@ extern void* (*projectconfig_var_addr)(ReaProject* proj, int idx);
 // Additional support
 extern void* (*GetSetMediaTrackInfo)(MediaTrack* tr, const char* parmname, void* setNewValue);
 extern double (*GetMediaTrackInfo_Value)(MediaTrack* tr, const char* parmname);
+
+extern int (*GetSetTrackGroupMembership)(MediaTrack* tr, const char* groupname, unsigned int setmask, unsigned int setvalue);
+extern int (*GetSetTrackGroupMembershipHigh)(MediaTrack* tr, const char* groupname, unsigned int setmask, unsigned int setvalue);
+
+
 /*
 ** REAPER command message defines
 */

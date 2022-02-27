@@ -9,6 +9,7 @@ private:
 	bool is_fp8;
 	int m_surface_id;
 	int m_bus_view_state;
+	int m_vca_view_state;
 	std::string m_bus_prefix;
 	int m_shift_state;
 	int m_channel_state;
@@ -37,7 +38,17 @@ public:
 
 	void SetBusView(int state) { m_bus_view_state = state; }
 	int GetBusView() { return m_bus_view_state; }
-	void ToggleBusView() { m_bus_view_state = !m_bus_view_state; }
+	void ToggleBusView() { 
+		m_bus_view_state = !m_bus_view_state; 
+		if(m_bus_view_state ==1) m_vca_view_state =0;
+	}
+
+	void SetVCAView(int state) { m_vca_view_state = state; }
+	int GetVCAView() { return m_vca_view_state; }
+	void ToggleVCAView() { 
+		m_vca_view_state = !m_vca_view_state; 
+		if (m_vca_view_state == 1) m_bus_view_state = 0;
+	}
 
 	void SetBusPrefix(std::string state) { m_bus_prefix = state; }
 	std::string GetBusPrefix() { return m_bus_prefix; }
