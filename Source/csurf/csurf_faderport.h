@@ -68,11 +68,13 @@ public:
 	int m_trackcolour_lastpos[16];
 	double m_mcu_meterpos[16];
 
-	int m_bus_lastpos[2]{ 0,0 };
-	int m_vca_lastpos[2]{ 0,0 };
-	int m_cycle_lastpos;
-	int m_metronome_lastpos;
-	int m_send_state_lastpos;
+	int m_bus_lastpos = 0;
+	int m_vca_lastpos =0;
+	int m_all_lastpos = 0;
+	int m_bank_lastpos = 0;
+	int m_cycle_lastpos =0;
+	int m_metronome_lastpos =0;
+	int m_send_state_lastpos =0;
 
 	SelectedTrack* m_selected_tracks;
 	midi_Output* m_midiout;
@@ -128,11 +130,11 @@ public:
 	bool isMacro(MIDI_event_t*);
 
 	// Buttons
-	void SetBankLED(); // radio behaviour with Channel LED
-	void SetChannelLED(); // radio behaviour with Bank LED
-	void SetLinkLED(); // Use link toggle if surface follows select
-	void SetBusLED(); // Use link toggle if surface follows select
-	void SetVCALED(); // Use link toggle if surface follows select
+	void SetChannelBankLED(); // radio behaviour with Bank LED
+	void SetLinkLED(); //  
+	void SetBusLED(); //  
+	void SetVCALED(); //  
+	void SetAllLED(); 
 
 	void SoloSelectedTrack(int, bool);
 	void MuteSelectedTrack(int, bool);
@@ -146,6 +148,7 @@ public:
 	void GetSetRepeatState(); // toggle repeat in Reaper and LED
 	void GetBusState(); // Bus LED
 	void GetVCAState(); // VCA LED
+	void GetAllState(); // All LED
 	void SetArmState();
 	void ClearArmState();
 	void GetSetMetronomeState(); // toggle Metronome in Reaper and LED
@@ -172,6 +175,9 @@ public:
 	void SetPanState();
 	void SetBusState();
 	void SetVCAState();
+	void SetAllState();
+
+	void SetChannelBankState();
 
 	// Reaper poll
 	void SetSurfaceFader(int surface_displayid, double volume, double pan);

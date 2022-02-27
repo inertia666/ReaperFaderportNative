@@ -10,6 +10,7 @@ private:
 	int m_surface_id;
 	int m_bus_view_state;
 	int m_vca_view_state;
+	int m_all_view_state;
 	std::string m_bus_prefix;
 	int m_shift_state;
 	int m_channel_state;
@@ -40,14 +41,24 @@ public:
 	int GetBusView() { return m_bus_view_state; }
 	void ToggleBusView() { 
 		m_bus_view_state = !m_bus_view_state; 
-		if(m_bus_view_state ==1) m_vca_view_state =0;
+		m_vca_view_state = !m_bus_view_state;
+		m_all_view_state = !m_bus_view_state;
 	}
 
 	void SetVCAView(int state) { m_vca_view_state = state; }
 	int GetVCAView() { return m_vca_view_state; }
 	void ToggleVCAView() { 
 		m_vca_view_state = !m_vca_view_state; 
-		if (m_vca_view_state == 1) m_bus_view_state = 0;
+		m_bus_view_state = !m_vca_view_state;
+		m_all_view_state = !m_vca_view_state;
+	}
+
+	void SetAllView(int state) { m_all_view_state = state; }
+	int GetAllView() { return m_all_view_state; }
+	void ToggleAllView() {
+		m_all_view_state = !m_all_view_state;
+		m_bus_view_state = !m_all_view_state;
+		m_vca_view_state = !m_all_view_state;
 	}
 
 	void SetBusPrefix(std::string state) { m_bus_prefix = state; }
@@ -63,11 +74,12 @@ public:
 	int GetShift() { return m_shift_state; }
 	void ToggleShift() { m_shift_state = !m_shift_state; }
 
-	void SetChannel(int state) { m_channel_state = state; }
-	int GetChannel() { return m_channel_state; }
-
 	void SetBank(int state) { m_bank_state = state; }
 	int GetBank() { return m_bank_state; }
+	void ToggleBank() {
+		m_bank_state = !m_bank_state;
+		m_channel_state = !m_bank_state;
+	}
 
 	void SetArm(int state) { m_arm_state = state; }
 	int GetArm() { return m_arm_state; }

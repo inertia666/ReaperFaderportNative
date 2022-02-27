@@ -262,7 +262,7 @@ void FaderportFunctions::ResetBtns() {
 	m_midiout->Send(BTN, B_VCA, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_ALL, !m_states->GetMCPMode() ? STATE_ON : STATE_OFF, -1);
 
-	m_midiout->Send(BTN, B_CHANNEL, m_states->GetChannel() ? STATE_ON : STATE_OFF, -1);
+	m_midiout->Send(BTN, B_CHANNEL, m_states->GetBank() ? STATE_OFF : STATE_ON, -1);
 	m_midiout->Send(BTN, B_BANK, m_states->GetBank() ? STATE_ON : STATE_OFF, -1);
 
 	m_midiout->Send(BTN, B_MUTE_CLEAR, STATE_OFF, -1);
