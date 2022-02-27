@@ -8,11 +8,20 @@ This controller is built for my use only and optimised for how I want my control
 
 This public code version is a stripped down version of my non-public code. This simplified public version allows you to control one instance of either the Faderport 16 or Faderport 8.
 
-The code base is originally designed to control two Faderport units at the same and offer advance features to my specific workflow. I can use both units as large virtual surface or I can split the units to control/view different aspects of Reaper with the press of a button.
+The code base is originally designed to control two Faderport units at the same and offer advance features specific to my workflow. I can use both units as large virtual surface or I can split the units to control/view different aspects of Reaper with the press of a button.
+Because I do not know of anyone using two Faderports or expect them to understand my view on how they should be controlled, I have released this simplified code.
 
-If you want a more customisable way to control a Faderport surface then I recommend using the Control Surface Integrator, by Geoff Waddington and installing Airon's Faderport configuration files as a starting point.
+If you want a more customisable way to control a Faderport surface, then I recommend using the Control Surface Integrator, by Geoff Waddington and installing Airon's Faderport configuration files as a starting point.
 
-Because the Control Surface Integrator is a completely stateless design, it does not really work exactly as I want it to. This is why I developed a native controller for my own use.
+Because the _Control Surface Integrator_ is a stateless design, it does not really work exactly as I want it to. This is why I developed a native controller for my own use.
+
+I encourage the use of the _Control Surface Integrator_ because it is a very mature project with plenty of contributors and more people to help with your problems. This driver will also work even if the CSI installed.
+For example, I use the CSI to control my _Console One_ and my own Faderport driver to controll my two Faderports.
+
+## _Disclaimer_ ##
+
+I am not a C++ developer by trade. I prefer easier languages like C#. I have found it challenging to structure the code as I would like. I also had to learn how to do all this on-the-fly using the csurf_mcu controller as a base and understand how Reaper works with extensions.
+The extension may crash Reaper. Don't use it on production environments if you are worried!
 
 ## _What is implemented?_
 
@@ -25,10 +34,14 @@ Because the Control Surface Integrator is a completely stateless design, it does
 - Pin the master bus to the surface 
 - Enable bypass, macro, link, VI, Audio buttons to assign to custom actions
 - Pan/Param wheel
+- Shift + Save, Redo, Undo
 
 ## _What is not yet implemented?_
 - Sends
 - VCA leader view
+- Zoom, Scroll, Section, Marker buttons. I haven't decided if I want to use them or how I want to use them
+- Limited support for Nagivation Wheel. At the moment, it only works to control the Master buss volume
+- RTZ << >> buttons. They go to the start/end of the project but are not useful right now.
 
 ## _What will never be implemented?_
 
@@ -73,6 +86,7 @@ The following buttons are currently implemented with details on how they work:
 | Click | Toggle metronome on/off |
 | Transport buttons| Repeat, Stop, Play/Pause, Record are all implemented|
 | Automation buttons| All buttons implemented except _Off_|
+
 ## _Links_
 - [Download] - 64bit Windows Build
 - [CSI] - Control Surface Integrator
