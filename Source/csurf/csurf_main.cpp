@@ -6,7 +6,7 @@
 
 #include "csurf.h"
 
-extern reaper_csurf_reg_t csurf_mcu_reg, csurf_faderport8_reg, csurf_faderport16_reg;
+extern reaper_csurf_reg_t csurf_mcu_reg, csurf_faderport_reg;
 
 REAPER_PLUGIN_HINSTANCE g_hInst; // used for dialogs, if any
 HWND g_hwnd;
@@ -233,9 +233,7 @@ extern "C"
 
 		if (errcnt) return 0;
 
-		rec->Register("csurf", &csurf_mcu_reg);
-		rec->Register("csurf", &csurf_faderport8_reg);
-		rec->Register("csurf", &csurf_faderport16_reg);
+		rec->Register("csurf", &csurf_faderport_reg);
 
 		return 1;
 	}

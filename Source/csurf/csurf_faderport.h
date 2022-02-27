@@ -217,7 +217,7 @@ public:
 	const char* GetDescString() override;
 	const char* GetConfigString() override;
 
-	CSurf_Faderport(bool isfp8, int indev, int outdev, int* errStats);
+	CSurf_Faderport(int indev, int outdev, int* errStats);
 	~CSurf_Faderport();
 
 	void LoadConfig(char* filename);

@@ -1,0 +1,14 @@
+#Place this config in the Reaper UserPlugins folder with the reaper_faderport16_x64 dll
+
+#Set to 16 or 8
+faderport=16
+
+# track number to start from 1..x
+start_track=0
+
+# Bus button identifier 
+# Prefix a track to show/hide from the Faderport when pressing "Bus" button
+bus_prefix=A-
+
+#Pins the master track to the start of the faderport
+pin_master_track=1

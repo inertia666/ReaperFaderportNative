@@ -14,11 +14,6 @@ using namespace std;
 // Global state variables allow multiple surfaces to share states
 static int g_fader_pan = 0;
 static int g_send_state = 0;
-static int g_spread_state = 0;
-static int g_spread_state_last[2]{ 0,0 };
-static int g_spread_moved = 1;
-static int g_spread_offset[2]{ 0,0 };
-static int g_spread_offset_last[2]{ 0,0 };
 static int g_channel_state = 0;
 static int g_bank_state = 1;
 static int g_number_of_tracks_last = 0;
@@ -146,8 +141,6 @@ void CSurf_Faderport::OnMidiEvent(MIDI_event_t* evt) {
 	}
 
 	if (isMacro(evt)) {
-		g_spread_state = !g_spread_state;
-
 		return;
 	}
 
@@ -511,12 +504,6 @@ bool CSurf_Faderport::OnTransportEvt(MIDI_event_t* evt) {
 void CSurf_Faderport::PrevNext(int direction) {
 	int surface_id = m_surfaceState.GetSurfaceId();
 
-	if (g_spread_state) {
-		g_doprevnext[0] = direction;
-		g_doprevnext[1] = direction;
-		return;
-	}
-
 	g_doprevnext[surface_id] = direction;
 }
 
@@ -528,12 +515,6 @@ void CSurf_Faderport::ClearPrevNextLED() {
 // Surface event functions
 void CSurf_Faderport::ChannelBank(int midi_code) {
 	if (!midi_code == B_CHANNEL || !midi_code == B_BANK) return;
-
-	if (g_spread_state) {
-		g_channel_state = !g_channel_state;
-		g_bank_state = !g_bank_state;
-		return;
-	}
 
 	midi_code == B_CHANNEL ? SetChannelLED() : SetBankLED();
 }
@@ -737,10 +718,8 @@ void CSurf_Faderport::Run() {
 	{
 		m_frameupd_lastrun = now;
 
-		SpreadCheck();
 		PrevNextCheck();
 		UpdateVirtualLayoutViews();
-		UpdateVirtualSpreadLayout();
 
 		// Run any scheduled events
 		while (m_schedule && now >= m_schedule->time) {
@@ -765,91 +744,15 @@ void CSurf_Faderport::Run() {
 	}
 }
 
-// Spread tracks over surfaces
-void CSurf_Faderport::SpreadCheck() {
-	int surface_id = m_surfaceState.GetSurfaceId();
-
-	m_surfaceState.SetSpread(g_spread_state);
-
-	if (g_spread_state_last[surface_id] == m_surfaceState.GetSpread()) return;
-
-	g_spread_state_last[surface_id] = g_spread_state;
-	SetMacroLED();
-}
-
 void CSurf_Faderport::PrevNextCheck() {
 	int surface_id = m_surfaceState.GetSurfaceId();
 
 	int direction = g_doprevnext[surface_id];
 
 	if (direction > -1) {
-		g_spread_state ? DoPrevNextSpread(direction) : DoPrevNext(direction);
+		DoPrevNext(direction);
 		g_doprevnext[surface_id] = -1;
 	}
-}
-
-// Syncs the track list to the surface display
-void CSurf_Faderport::DoPrevNextSpread(int direction) {
-	// Avoid per surface processing
-	if (g_spread_moved == 1) {
-		g_spread_moved = 0;
-		return;
-	}
-
-	int surface_id = m_surfaceState.GetSurfaceId();
-	int movesize=0;
-	int move_by_channel = m_surfaceState.GetChannel();
-	int current_offset = m_surfaceState.GetSpreadPrevNextOffset();
-	int current_surface_id = m_surfaceState.GetSurfaceId();
-	int total_surface_size = g_surface_sizes[0] + g_surface_sizes[1];
-	int number_reaper_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetTrackOffset();
-
-	move_by_channel == 1 ? movesize = 1 : movesize = total_surface_size;
-
-	if (number_reaper_tracks <= total_surface_size) return;
-
-	// Find direction
-	if (direction == 1) // right
-	{
-		// light button
-		m_midiout->Send(BTN, B_NEXT, STATE_ON, -1);
-
-		g_spread_offset[0] += movesize;
-		g_spread_offset[1] = g_spread_offset[0] + g_surface_sizes[0];
- 
-		if (!move_by_channel && g_spread_offset[1] + g_surface_sizes[1] > number_reaper_tracks) {
-			g_spread_offset[1] = (number_reaper_tracks - g_surface_sizes[1]);
-		}
-	 						 
-		// when moving by channel do not exceed the maximum number of tracks in reaper
-	 	if (move_by_channel && g_spread_offset[1] + g_surface_sizes[1] > number_reaper_tracks) {
-			g_spread_offset[1] -= 1;
-		} 
-
-		g_spread_offset[0] = g_spread_offset[1] - g_surface_sizes[0];
-	}
-	else // left
-	{
-		// light button
-		m_midiout->Send(BTN, B_PREV, STATE_ON, -1);
-
-		g_spread_offset[0] -= movesize;
-	 
-		// Do not go beyond the first track
-		if (g_spread_offset[0] < 0) {
-			g_spread_offset[0] = 0;
-		}
-
-		g_spread_offset[1] = g_spread_offset[0] + +g_surface_sizes[0];
-	
-	}
- 
-	g_spread_moved = 1;
-
-	// always clear the surface track caches whenever the track positions get updated
-	ClearCaches();
-
-	ScheduleAction(timeGetTime() + 150, &CSurf_Faderport::ClearPrevNextLED);
 }
 
 void CSurf_Faderport::DoPrevNext(int direction) {
@@ -858,7 +761,7 @@ void CSurf_Faderport::DoPrevNext(int direction) {
 	int move_by_channel = m_surfaceState.GetChannel();
 	int current_bankchannel_offset = m_surfaceState.GetPrevNextOffset();
 
-	int surface_size = g_spread_state ? g_surface_sizes[0] + g_surface_sizes[1] : m_surfaceState.GetSurfaceSize();
+	int surface_size = m_surfaceState.GetSurfaceSize();
 	int track_offset = m_surfaceState.GetTrackOffset();
 
 	move_by_channel ? movesize = 1 : movesize = surface_size;
@@ -890,7 +793,7 @@ void CSurf_Faderport::DoPrevNext(int direction) {
 		(current_bankchannel_offset - track_offset < 0) ? current_bankchannel_offset = 0 : false;
 	}
 
-	m_surfaceState.SetSpreadPrevNextOffset(current_bankchannel_offset);
+	m_surfaceState.SetPrevNextOffset(current_bankchannel_offset);
 	// always clear the surface track caches whenever the track positions get updated
 	ClearCaches();
 
@@ -1021,7 +924,7 @@ void CSurf_Faderport::GetBusState() {
 
 void CSurf_Faderport::GetChannelBankState() {
 	int surface_id = m_surfaceState.GetSurfaceId();
-	if (!g_spread_state) return;
+	//if (!g_spread_state) return;
 
 	g_bank_state ? SetBankLED() : false;
 	g_channel_state ? SetChannelLED() : false;
@@ -1409,53 +1312,6 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 	g_vs_currentview = m_surfaceState.GetBusView() ? &g_vs_busview : &g_vs_allview;
 };
 
-void  CSurf_Faderport::UpdateVirtualSpreadLayout() {
-	int track_id_bus = 0;
-	int track_id_all = 0;
-	int track_id_spread = 0;
-
-	int surface_id = m_surfaceState.GetSurfaceId();
-	int current_reaper_trackId = 0;
-	int max_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetPrevNextOffset();
-
-	m_vs_spreadview = {};
-
-	//int prevnext_offset = m_surfaceState.GetSpreadPrevNextOffset();
-
-	int prevnext_offset = g_spread_offset[surface_id];
-
-	while (current_reaper_trackId < max_tracks) {
-		current_reaper_trackId++;
-
-		MediaTrack* track = CSurf_TrackFromID(prevnext_offset + current_reaper_trackId, m_surfaceState.GetMCPMode());
-
-		if (!track) continue;
-
-		int trackNumber = (int)GetMediaTrackInfo_Value(track, "IP_TRACKNUMBER");
-		char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
-
-		if (!title || isBusTrack(title)) continue;
-
-		if (track_id_all > 32) continue;
-
-		int spread_offset = m_surfaceState.GetSurfaceId() == 1 ? g_surface_sizes[0] : 0;
-
-		// fill up the spreadview vsurface
-		if (track_id_all + prevnext_offset > spread_offset - 1) {
-			m_vs_spreadview.media_track[track_id_spread] = track;
-			m_vs_spreadview.media_track_last[track_id_spread] = track;
-			m_vs_spreadview.media_track_number[track_id_spread] = trackNumber;
-			m_vs_spreadview.display_number[track_id_spread] = track_id_all;
-			m_vs_spreadview.number_of_tracks += 1;
-			track_id_spread++;
-		}
-
-		track_id_all++;
-	}
-
-	if (g_spread_state) g_vs_currentview = &m_vs_spreadview;
-}
-
 bool CSurf_Faderport::isBusTrack(std::string title) {
 	std::string prefix = m_surfaceState.GetBusPrefix();
 
@@ -1468,10 +1324,10 @@ bool CSurf_Faderport::isBusTrack(std::string title) {
 
 #pragma region init
 // Constructor/Initialise
-CSurf_Faderport::CSurf_Faderport(bool isExtender, int indev, int outdev, int* errStats) {
+CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
 	bus = 0;
-	isExtender ? LoadConfig("fpB.cfg") : LoadConfig("fpA.cfg");
-	isExtender ? m_surfaceState.SetSurfaceId(1) : m_surfaceState.SetSurfaceId(0);
+	LoadConfig("config.txt");
+	m_surfaceState.SetSurfaceId(0);
 
 	int isfp8 = faderport == 8 ? 1 : 0;
 
@@ -1481,23 +1337,18 @@ CSurf_Faderport::CSurf_Faderport(bool isExtender, int indev, int outdev, int* er
 	m_surfaceState.SetSurfaceSize(m_surfaceState.GetIsFP8() ? FP8_SIZE : FP16_SIZE);
 	m_surfaceState.SetTrackOffset(start_track == 0 ? 0 : start_track - 1);
 	m_surfaceState.SetPrevNextOffset(0);
-	m_surfaceState.SetBusView(bus);
+	//m_surfaceState.SetBusView(bus);
 	m_surfaceState.SetBusPrefix(bus_prefix);
 	m_surfaceState.SetBank(!m_surfaceState.GetChannel());
 
-	isExtender ? g_surface_sizes[1] = m_surfaceState.GetSurfaceSize() : g_surface_sizes[0] = m_surfaceState.GetSurfaceSize();
+	g_surface_sizes[0] = m_surfaceState.GetSurfaceSize();
 
 	// Set global states
 	g_fader_pan = 0;
 	g_send_state = 0;
 
 	int surface_id = m_surfaceState.GetSurfaceId();
-	if (!g_spread_state) g_spread_state = spread;
 
-	m_surfaceState.SetSpread(g_spread_state);
-
-	g_spread_offset[0] = 0;
-	g_spread_offset[1] = g_surface_sizes[0];
 	m_midi_in_dev = indev;
 	m_midi_out_dev = outdev;
 
@@ -1595,10 +1446,10 @@ void CSurf_Faderport::ClearTrackTitleCache() {
 	}
 }
 
-const char* CSurf_Faderport::GetTypeString() { return m_surfaceState.GetSurfaceId() == 0 ? "FADERPORT16A" : "FADERPORT16B"; }
+const char* CSurf_Faderport::GetTypeString() { return "FADERPORTNATIVE"; }
 
 const char* CSurf_Faderport::GetDescString() {
-	m_surfaceState.GetSurfaceId() == 0 ? descspace.Set("Presonus Faderport 16/8 A") : descspace.Set("Presonus Faderport 16/8 B");
+	descspace.Set("Presonus Faderport 16/8 Native");
 	char tmp[512];
 	sprintf(tmp, " (dev %d,%d)", m_midi_in_dev, m_midi_out_dev);
 	descspace.Append(tmp);
@@ -1638,9 +1489,7 @@ static IReaperControlSurface* createFunc(const char* type_string, const char* co
 	int parms[2];
 	parseParms(configString, parms);
 
-	bool isExtender = strcmp(type_string, "FADERPORT16B") + 1;
-
-	return new CSurf_Faderport(isExtender, parms[0], parms[1], errStats);
+	return new CSurf_Faderport(parms[0], parms[1], errStats);
 }
 
 static HWND configFunc(const char* type_string, HWND parent, const char* initConfigString)
@@ -1648,35 +1497,24 @@ static HWND configFunc(const char* type_string, HWND parent, const char* initCon
 	return CreateDialogParam(g_hInst, MAKEINTRESOURCE(IDD_SURFACEEDIT_MCU1), parent, dlgProc, (LPARAM)initConfigString);
 }
 
-reaper_csurf_reg_t csurf_faderport16_reg =
+reaper_csurf_reg_t csurf_faderport_reg =
 {
-  "FADERPORT16A",
-  "Presonus Faderport 16/8 A",
-  createFunc,
-  configFunc,
-};
-
-reaper_csurf_reg_t csurf_faderport8_reg =
-{
-  "FADERPORT16B",
-  "Presonus Faderport 16/8 B",
+  "FADERPORTNATIVE",
+  "Presonus Faderport 16/8 Native",
   createFunc,
   configFunc,
 };
 
 void CSurf_Faderport::LoadConfig(char* pfilename) {
 	start_track = 1;
-	link = 0;
-	track_fix = 0;
 	faderport = 8;
-	spread = 0;
 
 	std::string path = GetResourcePath();
 	std::string filename = pfilename;
 	std::string fullpath = path + "\\UserPlugins\\" + filename;
 
 	// Names of the variables in the config file.
-	std::vector<std::string> ln = { "faderport", "start_track","bus_prefix","track_fix","link","bus","spread","surface_id" };
+	std::vector<std::string> ln = { "faderport", "start_track","bus_prefix" };
 
 	// Open the config file for reading
 	std::ifstream f_in(fullpath);
@@ -1684,7 +1522,7 @@ void CSurf_Faderport::LoadConfig(char* pfilename) {
 		cout << "Error reading file !" << endl;
 	else
 	{
-		CFG::ReadFile(f_in, ln, faderport, start_track, bus_prefix, track_fix, link, bus, spread, surface_id);
+		CFG::ReadFile(f_in, ln, faderport, start_track, bus_prefix);
 		f_in.close();
 	}
 }
