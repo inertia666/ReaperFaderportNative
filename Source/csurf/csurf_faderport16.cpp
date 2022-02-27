@@ -924,7 +924,6 @@ void CSurf_Faderport::GetBusState() {
 
 void CSurf_Faderport::GetChannelBankState() {
 	int surface_id = m_surfaceState.GetSurfaceId();
-	//if (!g_spread_state) return;
 
 	g_bank_state ? SetBankLED() : false;
 	g_channel_state ? SetChannelLED() : false;
@@ -1337,7 +1336,7 @@ CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
 	m_surfaceState.SetSurfaceSize(m_surfaceState.GetIsFP8() ? FP8_SIZE : FP16_SIZE);
 	m_surfaceState.SetTrackOffset(start_track == 0 ? 0 : start_track - 1);
 	m_surfaceState.SetPrevNextOffset(0);
-	//m_surfaceState.SetBusView(bus);
+	m_surfaceState.SetBusView(bus);
 	m_surfaceState.SetBusPrefix(bus_prefix);
 	m_surfaceState.SetBank(!m_surfaceState.GetChannel());
 
