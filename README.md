@@ -39,6 +39,6 @@ Because the Control Surface Integrator is a completely stateless design, it does
 - [CSI] - Control Surface Integrator
 - [Airon] - Airon's Faderport config for CSI
 
-   [download]: <https://stash.reaper.fm/manage_file/43911/Fp16.zip>
+   [download]: <https://stash.reaper.fm/v/43911/Fp16.zip>
    [csi]: <https://github.com/GeoffAWaddington/reaper_csurf_integrator/wiki>
    [airon]: <https://forum.cockos.com/showthread.php?t=240162>
