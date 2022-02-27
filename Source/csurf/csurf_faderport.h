@@ -68,7 +68,8 @@ public:
 	int m_trackcolour_lastpos[16];
 	double m_mcu_meterpos[16];
 
-	int m_bus_lastpos[2];
+	int m_bus_lastpos[2]{ 0,0 };
+	int m_vca_lastpos[2]{ 0,0 };
 	int m_cycle_lastpos;
 	int m_metronome_lastpos;
 	int m_send_state_lastpos;
@@ -130,6 +131,8 @@ public:
 	void SetBankLED(); // radio behaviour with Channel LED
 	void SetChannelLED(); // radio behaviour with Bank LED
 	void SetLinkLED(); // Use link toggle if surface follows select
+	void SetBusLED(); // Use link toggle if surface follows select
+	void SetVCALED(); // Use link toggle if surface follows select
 
 	void SoloSelectedTrack(int, bool);
 	void MuteSelectedTrack(int, bool);
@@ -141,7 +144,8 @@ public:
 	void SoloClearAll(int); // Clear all solod tracks and LED
 	void MuteClearAll(int); // Clear all muted tracks and LED
 	void GetSetRepeatState(); // toggle repeat in Reaper and LED
-	void GetBusState(); // toggle repeat in Reaper and LED
+	void GetBusState(); // Bus LED
+	void GetVCAState(); // VCA LED
 	void SetArmState();
 	void ClearArmState();
 	void GetSetMetronomeState(); // toggle Metronome in Reaper and LED

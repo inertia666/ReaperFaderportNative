@@ -16,6 +16,8 @@ static int g_fader_pan = 0;
 static int g_send_state = 0;
 static int g_channel_state = 0;
 static int g_bank_state = 1;
+static int g_vca_state = 0;
+static int g_bus_state = 0;
 static int g_number_of_tracks_last = 0;
 static int g_surface_sizes[2]{ 0,0 };
 static int g_doprevnext[2]{ -1,-1 };
@@ -54,7 +56,6 @@ void CSurf_Faderport::OnMidiEvent(MIDI_event_t* evt) {
 		SetBusState();
 		return;
 	}
-
 
 	if (isVCAEvt(evt)) {
 		SetVCAState();
@@ -555,6 +556,22 @@ void CSurf_Faderport::SetChannelLED() {
 	m_midiout->Send(BTN, B_BANK, STATE_OFF, -1);
 }
 
+void CSurf_Faderport::SetBusLED() {
+	//m_surfaceState.ToggleLink();
+	m_surfaceState.SetBusView(1);
+	m_midiout->Send(BTN, B_BUS, m_surfaceState.GetBusView() ? STATE_ON : STATE_OFF, -1);
+	m_Functions.SetBtnColour(B_BUS, 33554431);
+	ClearCaches();
+}
+
+void CSurf_Faderport::SetVCALED() {
+	//m_surfaceState.ToggleLink();
+	m_surfaceState.SetVCAView(1);
+	m_midiout->Send(BTN, B_VCA, m_surfaceState.GetVCAView() ? STATE_ON : STATE_OFF, -1);
+	m_Functions.SetBtnColour(B_VCA, 33554431);
+	ClearCaches();
+}
+
 void CSurf_Faderport::SetLinkLED() {
 	m_surfaceState.ToggleLink();
 	m_midiout->Send(BTN, B_LINK, m_surfaceState.GetLink() ? STATE_ON : STATE_OFF, -1);
@@ -832,6 +849,7 @@ void CSurf_Faderport::SyncReaperToSurface(DWORD now) {
 	GetSetRepeatState();
 	GetSetMetronomeState();
 	GetBusState();
+	GetVCAState();
 	GetChannelBankState();
 
 	int VU_BOTTOM = 70;
@@ -940,13 +958,28 @@ int CSurf_Faderport::CalculateMeter(MediaTrack* track, int surface_displayid, in
 
 void CSurf_Faderport::GetBusState() {
 	int state = m_surfaceState.GetBusView();
-	int surface_id = m_surfaceState.GetSurfaceId();
+	//int surface_id = m_surfaceState.GetSurfaceId();
 
-	if (m_bus_lastpos[surface_id] == state) return;
+//	if (m_bus_lastpos[surface_id] == state) return;
 
-	m_bus_lastpos[surface_id] = state;
+	//m_bus_lastpos[surface_id] = state;
 
-	m_midiout->Send(BTN, B_BUS, state ? STATE_ON : STATE_OFF, -1);
+	//m_midiout->Send(BTN, B_BUS, state ? STATE_ON : STATE_OFF, -1);
+
+	state ? SetBusLED() : false;
+}
+
+void CSurf_Faderport::GetVCAState() {
+	int state = m_surfaceState.GetVCAView();
+	//int surface_id = m_surfaceState.GetSurfaceId();
+
+	//if (m_vca_lastpos[surface_id] == state) return;
+
+	//m_vca_lastpos[surface_id] = state;
+
+	//m_midiout->Send(BTN, B_VCA, state ? STATE_ON : STATE_OFF, -1);
+
+	state ? SetVCALED() : false;
 }
 
 void CSurf_Faderport::GetChannelBankState() {
@@ -1309,6 +1342,8 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 		int vca_l_lo = GetSetTrackGroupMembership(track, "VOLUME_VCA_LEAD", 0, 0);
 		int vca_l_hi = GetSetTrackGroupMembershipHigh(track, "VOLUME_VCA_LEAD", 0, 0);
 
+		bool isVCATrack = vca_l_lo > 0 || vca_l_hi > 0;
+
 		int trackNumber = (int)GetMediaTrackInfo_Value(track, "IP_TRACKNUMBER");
 		char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
 
@@ -1327,7 +1362,7 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 
 		
 		}// Vca view
-		else if (vca_l_lo > 0 || vca_l_hi > 0) {
+		else if (isVCATrack) {
 			if (track_id_bus > 15) continue;
 
 			g_vs_vcaview.media_track[track_id_bus] = track;
@@ -1336,8 +1371,6 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 			g_vs_vcaview.display_number[track_id_bus] = track_id_bus;
 			g_vs_vcaview.number_of_tracks += 1;
 			track_id_bus++;
-
-			g_vs_currentview = &g_vs_vcaview;
 		}
 		else { // All view vsurface
 			if (track_id_all > 32) continue;
@@ -1348,12 +1381,11 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 			g_vs_allview.display_number[track_id_all] = track_id_all;
 			g_vs_allview.number_of_tracks += 1;
 			track_id_all++;
-
-			g_vs_currentview = &g_vs_allview;
 		}
 	}
 
 	g_vs_currentview = &g_vs_allview;
+
 	if (m_surfaceState.GetBusView()) {
 		g_vs_currentview = &g_vs_busview;
 	}
@@ -1394,7 +1426,9 @@ CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
 	m_surfaceState.SetSurfaceSize(m_surfaceState.GetIsFP8() ? FP8_SIZE : FP16_SIZE);
 	m_surfaceState.SetTrackOffset(start_track == 0 ? 0 : start_track - 1);
 	m_surfaceState.SetPrevNextOffset(0);
-	m_surfaceState.SetBusView(bus);
+	//m_surfaceState.SetBusView(bus);
+	m_surfaceState.SetBusView(0);
+	m_surfaceState.SetVCAView(0);
 	m_surfaceState.SetBusPrefix(bus_prefix);
 	m_surfaceState.SetBank(!m_surfaceState.GetChannel());
 
@@ -1416,6 +1450,8 @@ CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
 	memset(m_vol_lasttouch, 0, sizeof(m_vol_lasttouch));
 	memset(m_select_lastpos, 0, sizeof(m_vol_lasttouch));
 	memset(m_arm_lastpos, 0, sizeof(m_vol_lasttouch));
+	memset(m_vca_lastpos, 0, sizeof(m_vca_lastpos));
+	memset(m_bus_lastpos, 0, sizeof(m_bus_lastpos));
 	memset(m_solo_lastpos, 0, sizeof(m_solo_lastpos));
 	memset(m_mute_lastpos, 0, sizeof(m_mute_lastpos));
 	memset(m_surfacedisplayid_removed, 0, sizeof(m_surfacedisplayid_removed));
@@ -1485,6 +1521,8 @@ void CSurf_Faderport::ClearCaches() {
 	memset(m_pan_lastpos, 0xff, sizeof(m_pan_lastpos));
 	memset(m_solo_lastpos, 0xff, sizeof(m_solo_lastpos));
 	memset(m_mute_lastpos, 0xff, sizeof(m_mute_lastpos));
+	memset(m_vca_lastpos, 0xff, sizeof(m_vca_lastpos));
+	memset(m_bus_lastpos, 0xff, sizeof(m_bus_lastpos));
 	memset(m_surfacedisplayid_removed, 0xff, sizeof(m_surfacedisplayid_removed));
 	memset(m_valuebarmode_lastpos, 0xff, sizeof(m_valuebarmode_lastpos));
 	ClearSelectButtonCache();
