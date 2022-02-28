@@ -8,7 +8,8 @@ This controller is built for my use only and optimised for how I want my control
 
 This public code version is a stripped down version of my non-public code. This simplified public version allows you to control one instance of either the Faderport 16 or Faderport 8.
 
-The code base is originally designed to control two Faderport units at the same and offer advance features specific to my workflow. I can use both units as large virtual surface or I can split the units to control/view different aspects of Reaper with the press of a button.
+The code base is originally designed to control two Faderport units at the same and offer advance features specific to my workflow. Therefore, there is still some legacy code and design patterns to take into account two Faderports, which I will try and remove/optimise as I go along.
+
 Because I do not know of anyone using two Faderports or expect them to understand my view on how they should be controlled, I have released this simplified code.
 
 If you want a more customisable way to control a Faderport surface, then I recommend using the Control Surface Integrator, by Geoff Waddington and installing Airon's Faderport configuration files as a starting point.
