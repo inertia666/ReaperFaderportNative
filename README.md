@@ -12,11 +12,11 @@ The code base is originally designed to control two Faderport units at the same 
 
 Because I do not know of anyone using two Faderports or expect them to understand my view on how they should be controlled, I have released this simplified code.
 
-If you want more flexibility and customisation, then I recommend using the Control Surface Integrator, by Geoff Waddington and installing Airon's Faderport configuration files as a starting point.  
+If you want more flexibility and customisation, then I recommend using the _Control Surface Integrator_, by _Geoff Waddington_ and installing _Airon's_ Faderport configuration files as a starting point.  
 
 Because the _Control Surface Integrator_ is a stateless design and will only mirror Reaper, it does not really work exactly as I want it to. This is why I developed a native controller for my own use. From my tests with the CSI, it will never work as I would like it to work because of its design ethos. This is not a criticism aimed at the CSI because it is a highly ambitious project and cleverly implemented and I myself use it for other DAW controllers. I use the CSI to control my _Console One_.
 
-I do encourage the use of the _Control Surface Integrator_ because it is a very mature project with plenty of contributors and more people to help with your problems. It opens up a world of flexibility you can only dream.
+I do encourage the use of the _Control Surface Integrator_ because it is a very mature project with plenty of contributors and more people to help with your problems. It opens up a world of flexibility.
 This driver will also work even with the CSI controller installed (as long as you are not using the CSI to control your Faderport).
  
 ## _Disclaimer_ ##
