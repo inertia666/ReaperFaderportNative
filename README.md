@@ -2,7 +2,7 @@
 
 ## _A native controller for the Presonus 16/8 in Reaper_
 
-This is alpha software and has bugs/unimplemented features and limitations. While it is public, I am not really doing support/requests for this at the moment.
+This is alpha software and has bugs/unimplemented features and limitations. While it is public, I am not really doing support/requests for this at the moment. However, I will try to take care of bugs and issues as I find the time.
 
 This controller is built for my use only and optimised for how I want my controller to behave in Reaper.
 
