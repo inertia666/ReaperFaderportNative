@@ -52,8 +52,8 @@ The extension may crash Reaper. Don't use it on production environments if you a
 
 The intention behind the contoller is to partially mimic using a regular mixing desk at the computer. There are some things implemented differently from other surface controllers:
 
- - The Faderport will always show a full bank of tracks when paging. For example, if you have 20 tracks in Reaper the Faderport 16 will display tracks 1-16. When you press "Next" to page by channel or bank, 
- the Faderport will show tracks 4-20. This is to avoid having empty faders constantly flip up and down when paging.
+ - The Faderport will always show a full bank of tracks when paging. For example, if you have 20 tracks in Reaper the Faderport 16 will display tracks 1-16. When you press "Next" to page by bank, 
+ the Faderport will show tracks 4-20. This is to avoid having empty faders constantly flip up and down when paging and not waste space.
 
 - _Bus view_ will not change the TCP or Mixer view in Reaper when showing busses. The driver will hold the state internally and create a virtual view to reflect on the Faderport. This means, if you press the _Bus_ button it will 
  display all your tracks that use the bus prefix tag in _config.txt_ file. 
@@ -63,7 +63,7 @@ The intention behind the contoller is to partially mimic using a regular mixing 
 
 ## _Button behaviour_
 
-*Note* if a button doesn't light up, it is not implemented yet.
+*Note* if a button doesn't light up, it is not implemented yet. It should, however, still trigger a MIDI event and can be assigned an action.
 
 The following buttons are currently implemented with details on how they work:
 
