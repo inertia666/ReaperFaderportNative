@@ -88,6 +88,33 @@ The following buttons are currently implemented with details on how they work:
 | Transport buttons| Repeat, Stop, Play/Pause, Record are all implemented|
 | Automation buttons| All buttons implemented except _Off_|
 
+## _Getting started_
+
+The Faderport must be set to "Studio One" mode. Make sure the Faderport is off. Hold down the first two _select_ buttons and turn on the unit. Make sure "Studio One" is highlighed and presse the _select_ button undernearth _EXIT_
+
+Install the dll from the _FP16.zip_ in your Reaper UserPlugins directory. Place the _config.txt_ in the same directory.
+
+Edit the _config.txt_ :
+
+Specify if you have the Faderport 8 or 16 version.:
+```sh
+#Set to 16 or 8
+faderport=16
+```
+
+Set the track to start from:
+```sh
+start_track=0
+```
+
+If you want to use busses and have the bus button display them on Faderport then you can add a track title prefix here to identify busses. To activate them, make sure your track has this prefix in the start of its name.
+
+```sh
+bus_prefix=A-
+```
+For example, to create a bus track for Drums, rename the track to _A-DRUMS_. This track will now be removed from main view and will be shown when pressing the _Bus_ button on the Faderport. You can make the prefix anything you like.
+
+
 ## _Links_
 - [Download] - 64bit Windows Build (at the moment this is buggy as cleaning up the code has caused breakage)
 - [CSI] - Control Surface Integrator
