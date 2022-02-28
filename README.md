@@ -89,7 +89,7 @@ The following buttons are currently implemented with details on how they work:
 | Automation buttons| All buttons implemented except _Off_|
 
 ## _Links_
-- [Download] - 64bit Windows Build
+- [Download] - 64bit Windows Build (at the moment this is buggy as cleaning up the code has caused breakage)
 - [CSI] - Control Surface Integrator
 - [Airon] - Airon's Faderport config for CSI
 
