@@ -90,7 +90,7 @@ The following buttons are currently implemented with details on how they work:
 
 ## _Getting started_
 
-The Faderport must be set to "Studio One" mode. Make sure the Faderport is off. Hold down the first two _select_ buttons and turn on the unit. Make sure "Studio One" is highlighed and presse the _select_ button undernearth _EXIT_
+The Faderport must be set to "Studio One" mode. Make sure the Faderport is off. Hold down the first two _select_ buttons and turn on the unit. Make sure "Studio One" is highlighed and press the _select_ button undernearth _EXIT_
 
 Install the dll from the _FP16.zip_ in your Reaper UserPlugins directory. Place the _config.txt_ in the same directory.
 
@@ -113,6 +113,8 @@ If you want to use busses and have the bus button display them on Faderport then
 bus_prefix=A-
 ```
 For example, to create a bus track for Drums, rename the track to _A-DRUMS_. This track will now be removed from main view and will be shown when pressing the _Bus_ button on the Faderport. You can make the prefix anything you like.
+
+Since Reaper doesn't really have traditional busses, you can think of this as a kind of filter instead that is engaged when pressing _Bus_. 
 
 
 ## _Links_
