@@ -79,6 +79,7 @@ The following buttons are currently implemented with details on how they work:
 | Pan | Ability to set the pan with a volume fader |
 | Bus | By adding the line "bus_prefix=A-" you can mark track names with a prefix (in this case, "A-", and show these tracks on the Faderport. Replace "A-" with characters of your choice. <br> |
 | VCA | Will show VCA leader tracks in the future |
+| All | Show all tracks not in the bus filter list |
 | Channel | _Prev/Next_ will move the surface display by -1/+1 channel at a time |
 | Bank | _Prev/Next_ will move the surface display by 8 or 16 channels at a time |
 | Prev | Move the surface display left by one channel or a bank of 8/16 depending on the _Channel_ or _Bank_ buttons status |
@@ -112,10 +113,25 @@ If you want to use busses and have the bus button display them on Faderport then
 ```sh
 bus_prefix=A-
 ```
-For example, to create a bus track for Drums, rename the track to _A-DRUMS_. This track will now be removed from main view and will be shown when pressing the _Bus_ button on the Faderport. You can make the prefix anything you like.
+For example, to create a bus track for Drums, rename the track to _A-DRUMS_. This track will now be removed from the main view and will be shown when pressing the _Bus_ button on the Faderport. You can make the prefix anything you like.
 
 Since Reaper doesn't really have traditional busses, you can think of this as a kind of filter instead that is engaged when pressing _Bus_. 
 
+## _Non-functioning buttons_
+All buttons should trigger a MIDI event, except for Shift. You can set up actions from the Reaper action list to trigger an action from any button on the Faderport.
+
+| Buttons without action |
+| ------ |
+| Bypass | 
+| Macro | 
+| Link | 
+| Track | 
+| Sends | 
+| Off | 
+| Zoom | 
+| Scroll | 
+| Section | 
+| Marker | 
 
 ## _Links_
 - [Download] - 64bit Windows Build (at the moment this is buggy as cleaning up the code has caused breakage)
