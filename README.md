@@ -14,11 +14,11 @@ Because I do not know of anyone using two Faderports or expect them to understan
 
 If you want more flexibility and customisation, then I recommend using the Control Surface Integrator, by Geoff Waddington and installing Airon's Faderport configuration files as a starting point.  
 
-Because the _Control Surface Integrator_ is a stateless design and will only mirror Reaper, it does not really work exactly as I want it to. This is why I developed a native controller for my own use. From my tests with the CSI, there are too many issues that require hardcoding to work around to fully make use of the Faderport's design.
+Because the _Control Surface Integrator_ is a stateless design and will only mirror Reaper, it does not really work exactly as I want it to. This is why I developed a native controller for my own use. From my tests with the CSI, it will never work as I would like it to work because of its design ethos. This is not a criticism aimed at the CSI because it is a highly ambitious project and cleverly implemented and I myself use it for other DAW controllers. I use the CSI to control my _Console One_.
 
-I encourage the use of the _Control Surface Integrator_ because it is a very mature project with plenty of contributors and more people to help with your problems. This driver will also work even if the CSI installed.
-For example, I use the CSI to control my _Console One_ and my own Faderport driver to controll my two Faderports.
-
+I do encourage the use of the _Control Surface Integrator_ because it is a very mature project with plenty of contributors and more people to help with your problems. It opens up a world of flexibility you can only dream.
+This driver will also work even with the CSI controller installed (as long as you are not using the CSI to control your Faderport).
+ 
 ## _Disclaimer_ ##
 
 I am not a C++ developer by trade. I prefer easier languages like C#. I have found it challenging to structure the code as I would like. I also had to learn how to do all this on-the-fly using the csurf_mcu controller as a base and understand how Reaper works with extensions.
