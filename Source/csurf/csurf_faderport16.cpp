@@ -47,17 +47,17 @@ void CSurf_Faderport::OnMidiEvent(MIDI_event_t* evt) {
 	m_button_last_time = now;
 
 	if (isBusEvt(evt)) {
-		SetBusState();
+		SetBusViewState();
 		return;
 	}
 
 	if (isVCAEvt(evt)) {
-		SetVCAState();
+		SetVCAViewState();
 		return;
 	}
 
 	if (isAllEvt(evt)) {
-		SetAllState();
+		SetAllViewState();
 		return;
 	}
 
@@ -98,12 +98,12 @@ void CSurf_Faderport::OnMidiEvent(MIDI_event_t* evt) {
 	}
 
 	if (isBankEvt(evt)) {
-		Bank(evt_code);
+		SetBankState();
 		return;
 	}
 
 	if (isChannelEvt(evt)) {
-		Channel(evt_code);
+		SetChannelState();
 		return;
 	}
 
@@ -539,16 +539,6 @@ void CSurf_Faderport::ClearPrevNextLED() {
 }
 
 // Surface event functions
-void CSurf_Faderport::Channel(int midi_code) {
-	m_surfaceState.SetChannel(1);
-	m_surfaceState.SetBank(0);
-}
-
-void CSurf_Faderport::Bank(int midi_code) {
-	m_surfaceState.SetChannel(0);
-	m_surfaceState.SetBank(1);
-}
-
 void CSurf_Faderport::SetBusLED() {
 
 	m_midiout->Send(BTN, B_BUS, STATE_ON, -1);
@@ -731,18 +721,24 @@ void CSurf_Faderport::SetSendsState() {
 	g_send_state = !g_send_state;
 }
 
-void CSurf_Faderport::SetBusState() {
-	m_surfaceState.ToggleBusView();
+void CSurf_Faderport::SetBusViewState() {
+	m_surfaceState.SetBusView(1);
+	m_surfaceState.SetVCAView(0);
+	m_surfaceState.SetAllView(0);
 	ClearCaches();
 }
 
-void CSurf_Faderport::SetVCAState() {
-	m_surfaceState.ToggleVCAView();
+void CSurf_Faderport::SetVCAViewState() {
+	m_surfaceState.SetBusView(0);
+	m_surfaceState.SetVCAView(1);
+	m_surfaceState.SetAllView(0);
 	ClearCaches();
 }
 
-void CSurf_Faderport::SetAllState() {
-	m_surfaceState.ToggleAllView();
+void CSurf_Faderport::SetAllViewState() {
+	m_surfaceState.SetBusView(0);
+	m_surfaceState.SetVCAView(0);
+	m_surfaceState.SetAllView(1);
 	ClearCaches();
 }
 
@@ -864,12 +860,17 @@ void CSurf_Faderport::DoPrevNext(int direction) {
 
 // Status from Reaper to the Surface controller
 void CSurf_Faderport::SyncReaperToSurface(DWORD now) {
-	GetSetRepeatState();
-	GetSetMetronomeState();
-	GetBusState();
-	GetVCAState();
-	GetAllState();
-	GetChannelBankState();
+
+	//Get states and turn on/off LEDs
+	// These functions act as caches to stop the Faderport updating its state each cycle
+	CacheRepeatState();
+	CacheMetronomeState();
+	CacheBusViewState();
+	CacheVCAViewState();
+	CacheAllViewState();
+	CacheChannelState();
+	CacheBankState();
+
 
 	int VU_BOTTOM = 70;
 	double decay = 0.0;
@@ -975,7 +976,7 @@ int CSurf_Faderport::CalculateMeter(MediaTrack* track, int surface_displayid, in
 	return v;
 }
 
-void CSurf_Faderport::GetBusState() {
+void CSurf_Faderport::CacheBusViewState() {
 
 	int state = m_surfaceState.GetBusView();
 
@@ -986,7 +987,7 @@ void CSurf_Faderport::GetBusState() {
 	SetBusLED();
 }
 
-void CSurf_Faderport::GetVCAState() {
+void CSurf_Faderport::CacheVCAViewState() {
 	int state = m_surfaceState.GetVCAView();
 
 	if (m_vca_lastpos == state) return;
@@ -996,7 +997,7 @@ void CSurf_Faderport::GetVCAState() {
 	SetVCALED();
 }
 
-void CSurf_Faderport::GetAllState() {
+void CSurf_Faderport::CacheAllViewState() {
 	int state = m_surfaceState.GetAllView();
 
 	if (m_all_lastpos == state) return;
@@ -1006,7 +1007,7 @@ void CSurf_Faderport::GetAllState() {
 	SetAllLED();
 }
 
-void CSurf_Faderport::GetChannelBankState() {
+void CSurf_Faderport::CacheBankState() {
 	int state = m_surfaceState.GetBank();
 
 	if (m_bank_lastpos == state) return;
@@ -1015,7 +1016,16 @@ void CSurf_Faderport::GetChannelBankState() {
 	SetChannelBankLED();
 }
 
-void CSurf_Faderport::GetSetRepeatState() {
+void CSurf_Faderport::CacheChannelState() {
+	int state = m_surfaceState.GetChannel();
+
+	if (m_channel_lastpos == state) return;
+
+	m_channel_lastpos = state;
+	SetChannelBankLED();
+}
+
+void CSurf_Faderport::CacheRepeatState() {
 	int state = (int)GetSetRepeat(-1) == 1 ? 1 : 0;
 
 	if (m_cycle_lastpos == state) return;
@@ -1024,7 +1034,7 @@ void CSurf_Faderport::GetSetRepeatState() {
 	m_midiout->Send(BTN, B_CYCLE, state ? STATE_ON : STATE_OFF, -1);
 }
 
-void CSurf_Faderport::GetSetMetronomeState() {
+void CSurf_Faderport::CacheMetronomeState() {
 	int sz;
 	int m_metronome_offset = projectconfig_var_getoffs("projmetroen", &sz);
 
@@ -1165,6 +1175,7 @@ void  CSurf_Faderport::SetChannelBankLED() {
 	m_midiout->Send(BTN, B_CHANNEL, m_surfaceState.GetChannel() ? STATE_ON : STATE_OFF, -1);
 	m_midiout->Send(BTN, B_BANK, m_surfaceState.GetBank() ? STATE_ON : STATE_OFF, -1);
 }
+
 // Update the meterbar on the display
 void CSurf_Faderport::UpdateSurfaceMeter(int surface_displayid, int v) {
 	(surface_displayid > 7) ? m_midiout->Send(PEAK_METER_9_16 + (surface_displayid & 7), v, 0, -1) : m_midiout->Send(PEAK_METER_1_8 + surface_displayid, v, 0, -1);
@@ -1352,6 +1363,7 @@ void CSurf_Faderport::OnTrackSelection(MediaTrack* track) {
 
 void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 	int track_id_bus = 0;
+	int track_id_vca = 0;
 	int track_id_all = 0;
 	int current_reaper_trackId = 0;
 	int max_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetPrevNextOffset();
@@ -1395,10 +1407,10 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 		else if (isVCATrack) {
 			if (track_id_bus > 15) continue;
 
-			g_vs_vcaview.media_track[track_id_bus] = track;
-			g_vs_vcaview.media_track_last[track_id_bus] = track;
-			g_vs_vcaview.media_track_number[track_id_bus] = trackNumber;
-			g_vs_vcaview.display_number[track_id_bus] = track_id_bus;
+			g_vs_vcaview.media_track[track_id_vca] = track;
+			g_vs_vcaview.media_track_last[track_id_vca] = track;
+			g_vs_vcaview.media_track_number[track_id_vca] = trackNumber;
+			g_vs_vcaview.display_number[track_id_vca] = track_id_bus;
 			g_vs_vcaview.number_of_tracks += 1;
 			track_id_bus++;
 		}
@@ -1460,6 +1472,7 @@ CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
 	m_surfaceState.SetVCAView(0);
 	m_surfaceState.SetAllView(1);
 	m_surfaceState.SetBank(1);
+	m_surfaceState.SetChannel(0);
 	m_surfaceState.SetBusPrefix(bus_prefix);
 
 	// Set global states

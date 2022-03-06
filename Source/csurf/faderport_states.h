@@ -37,29 +37,14 @@ public:
 	void SetSurfaceId(int state) { m_surface_id = state; }
 	int GetSurfaceId() { return m_surface_id; }
 
-	void SetBusView(int state) { m_bus_view_state = state; }
+	void SetBusView(int state) { m_bus_view_state = state; 	}
 	int GetBusView() { return m_bus_view_state; }
-	void ToggleBusView() { 
-		m_bus_view_state = !m_bus_view_state; 
-		m_vca_view_state = !m_bus_view_state;
-		m_all_view_state = !m_bus_view_state;
-	}
 
 	void SetVCAView(int state) { m_vca_view_state = state; }
 	int GetVCAView() { return m_vca_view_state; }
-	void ToggleVCAView() { 
-		m_vca_view_state = !m_vca_view_state; 
-		m_bus_view_state = !m_vca_view_state;
-		m_all_view_state = !m_vca_view_state;
-	}
 
 	void SetAllView(int state) { m_all_view_state = state; }
 	int GetAllView() { return m_all_view_state; }
-	void ToggleAllView() {
-		m_all_view_state = !m_all_view_state;
-		m_bus_view_state = !m_all_view_state;
-		m_vca_view_state = !m_all_view_state;
-	}
 
 	void SetBusPrefix(std::string state) { m_bus_prefix = state; }
 	std::string GetBusPrefix() { return m_bus_prefix; }

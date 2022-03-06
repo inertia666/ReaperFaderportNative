@@ -72,6 +72,7 @@ public:
 	int m_vca_lastpos =0;
 	int m_all_lastpos = 0;
 	int m_bank_lastpos = 0;
+	int m_channel_lastpos = 0;
 	int m_cycle_lastpos =0;
 	int m_metronome_lastpos =0;
 	int m_send_state_lastpos =0;
@@ -146,13 +147,15 @@ public:
 
 	void SoloClearAll(int); // Clear all solod tracks and LED
 	void MuteClearAll(int); // Clear all muted tracks and LED
-	void GetSetRepeatState(); // toggle repeat in Reaper and LED
-	void GetBusState(); // Bus LED
-	void GetVCAState(); // VCA LED
-	void GetAllState(); // All LED
+	void CacheRepeatState(); // toggle repeat in Reaper and LED
+	void CacheBusViewState(); // Bus LED
+	void CacheVCAViewState(); // VCA LED
+	void CacheAllViewState(); // All LED
+	void CacheBankState(); //Channel Bank LEDs
+	void CacheChannelState(); //Channel Bank LEDs
 	void SetArmState();
 	void ClearArmState();
-	void GetSetMetronomeState(); // toggle Metronome in Reaper and LED
+	void CacheMetronomeState(); // toggle Metronome in Reaper and LED
 	void SetMCPTCPView(); // switch between Mixer or TCP view
 	void SetRecordArm(MediaTrack* track);
 	void SetMasterState();
@@ -167,17 +170,14 @@ public:
 
 	void PrevNext(int); // move surface tracks by channel or bank
 	void DoPrevNext(int);
-	void Channel(int);
-	void Bank(int);
-
 	void ClearSaveLED();
 	void ClearUndoLED();
 	void ClearRedoLED();
 
 	void SetPanState();
-	void SetBusState();
-	void SetVCAState();
-	void SetAllState();
+	void SetBusViewState();
+	void SetVCAViewState();
+	void SetAllViewState();
 
 	void SetChannelState();
 	void SetBankState();
@@ -205,7 +205,7 @@ public:
 	void CleanUpTrackDisplay(int);
 	void GetCurrentVirtualSurfaceView();
 
-	void GetChannelBankState();
+
 	// Reaper API events
 	void Run() override;
 
