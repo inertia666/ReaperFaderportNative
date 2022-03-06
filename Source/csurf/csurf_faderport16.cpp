@@ -1405,18 +1405,18 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 		
 		}// Vca view
 		else if (isVCATrack) {
-			if (track_id_bus > 15) continue;
+			if (track_id_vca > 15) continue;
 
 			g_vs_vcaview.media_track[track_id_vca] = track;
 			g_vs_vcaview.media_track_last[track_id_vca] = track;
 			g_vs_vcaview.media_track_number[track_id_vca] = trackNumber;
-			g_vs_vcaview.display_number[track_id_vca] = track_id_bus;
+			g_vs_vcaview.display_number[track_id_vca] = track_id_vca;
 			g_vs_vcaview.number_of_tracks += 1;
-			track_id_bus++;
+			track_id_vca++;
 		}
 		else { // All view vsurface
-			if (track_id_all > 32) continue;
-
+			//if (track_id_all > 32) continue;
+			if (track_id_all > 15) continue;
 			g_vs_allview.media_track[track_id_all] = track;
 			g_vs_allview.media_track_last[track_id_all] = track;
 			g_vs_allview.media_track_number[track_id_all] = trackNumber;
