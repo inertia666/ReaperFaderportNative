@@ -76,10 +76,9 @@ public:
 
 	void SetBank(int state) { m_bank_state = state; }
 	int GetBank() { return m_bank_state; }
-	void ToggleBank() {
-		m_bank_state = !m_bank_state;
-		m_channel_state = !m_bank_state;
-	}
+
+	void SetChannel(int state) { m_channel_state = state; }
+	int GetChannel() { return m_channel_state; }
 
 	void SetArm(int state) { m_arm_state = state; }
 	int GetArm() { return m_arm_state; }

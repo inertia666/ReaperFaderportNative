@@ -109,7 +109,8 @@ public:
 	bool isMuteEvt(MIDI_event_t*);
 	bool isSoloEvt(MIDI_event_t*);
 	bool isPrevNextEvt(MIDI_event_t*);
-	bool isChannelBankEvt(MIDI_event_t*);
+	bool isChannelEvt(MIDI_event_t*);
+	bool isBankEvt(MIDI_event_t*);
 	bool isSoloClearEvt(MIDI_event_t*);
 	bool isMuteClearEvt(MIDI_event_t*);
 	bool isChannelSelectEvt(MIDI_event_t*);
@@ -166,7 +167,8 @@ public:
 
 	void PrevNext(int); // move surface tracks by channel or bank
 	void DoPrevNext(int);
-	void ChannelBank(int);
+	void Channel(int);
+	void Bank(int);
 
 	void ClearSaveLED();
 	void ClearUndoLED();
@@ -177,7 +179,8 @@ public:
 	void SetVCAState();
 	void SetAllState();
 
-	void SetChannelBankState();
+	void SetChannelState();
+	void SetBankState();
 
 	// Reaper poll
 	void SetSurfaceFader(int surface_displayid, double volume, double pan);

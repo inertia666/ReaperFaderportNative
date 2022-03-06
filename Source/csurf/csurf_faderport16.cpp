@@ -97,9 +97,13 @@ void CSurf_Faderport::OnMidiEvent(MIDI_event_t* evt) {
 		return;
 	}
 
-	if (isChannelBankEvt(evt)) {
-		SetChannelBankState();
-		//ChannelBank(evt_code);
+	if (isBankEvt(evt)) {
+		Bank(evt_code);
+		return;
+	}
+
+	if (isChannelEvt(evt)) {
+		Channel(evt_code);
 		return;
 	}
 
@@ -175,9 +179,14 @@ bool CSurf_Faderport::isPrevNextEvt(MIDI_event_t* evt) {
 	return m_Functions.isBtn(evt) && (midi_code == B_PREV || midi_code == B_NEXT);
 }
 
-bool CSurf_Faderport::isChannelBankEvt(MIDI_event_t* evt) {
+bool CSurf_Faderport::isChannelEvt(MIDI_event_t* evt) {
 	int midi_code = evt->midi_message[1];
-	return (m_Functions.isBtn(evt) && (midi_code == B_CHANNEL || midi_code == B_BANK));
+	return (m_Functions.isBtn(evt) && midi_code == B_CHANNEL);
+}
+
+bool CSurf_Faderport::isBankEvt(MIDI_event_t* evt) {
+	int midi_code = evt->midi_message[1];
+	return (m_Functions.isBtn(evt) && midi_code == B_BANK);
 }
 
 bool CSurf_Faderport::isMuteEvt(MIDI_event_t* evt) {
@@ -530,20 +539,14 @@ void CSurf_Faderport::ClearPrevNextLED() {
 }
 
 // Surface event functions
-void CSurf_Faderport::ChannelBank(int midi_code) {
-	if (!midi_code == B_CHANNEL || !midi_code == B_BANK) return;
-
-
-	SetChannelBankLED();
+void CSurf_Faderport::Channel(int midi_code) {
+	m_surfaceState.SetChannel(1);
+	m_surfaceState.SetBank(0);
 }
 
-void CSurf_Faderport::SetChannelBankLED() {
-	// light the bank button and turn off the channel button
-	int bank = m_surfaceState.GetBank();
-	m_midiout->Send(BTN, B_BANK, bank ? STATE_ON : STATE_OFF, -1);
-
-	int channel = m_surfaceState.GetChannel();
-	m_midiout->Send(BTN, B_CHANNEL, channel ? STATE_OFF: STATE_ON, -1);
+void CSurf_Faderport::Bank(int midi_code) {
+	m_surfaceState.SetChannel(0);
+	m_surfaceState.SetBank(1);
 }
 
 void CSurf_Faderport::SetBusLED() {
@@ -743,8 +746,15 @@ void CSurf_Faderport::SetAllState() {
 	ClearCaches();
 }
 
-void CSurf_Faderport::SetChannelBankState() {
-	m_surfaceState.ToggleBank();
+void CSurf_Faderport::SetChannelState() {
+	m_surfaceState.SetChannel(1);
+	m_surfaceState.SetBank(0);
+	ClearCaches();
+}
+
+void CSurf_Faderport::SetBankState() {
+	m_surfaceState.SetBank(1);
+	m_surfaceState.SetChannel(0);
 	ClearCaches();
 }
 
@@ -1151,6 +1161,10 @@ void CSurf_Faderport::SetSoloLED(int surface_displayid, int solo) {
 	m_Functions.AnySolo() ? m_midiout->Send(BTN, B_SOLO_CLEAR, STATE_ON, -1) : m_midiout->Send(BTN, B_SOLO_CLEAR, STATE_OFF, -1);
 }
 
+void  CSurf_Faderport::SetChannelBankLED() {
+	m_midiout->Send(BTN, B_CHANNEL, m_surfaceState.GetChannel() ? STATE_ON : STATE_OFF, -1);
+	m_midiout->Send(BTN, B_BANK, m_surfaceState.GetBank() ? STATE_ON : STATE_OFF, -1);
+}
 // Update the meterbar on the display
 void CSurf_Faderport::UpdateSurfaceMeter(int surface_displayid, int v) {
 	(surface_displayid > 7) ? m_midiout->Send(PEAK_METER_9_16 + (surface_displayid & 7), v, 0, -1) : m_midiout->Send(PEAK_METER_1_8 + surface_displayid, v, 0, -1);
