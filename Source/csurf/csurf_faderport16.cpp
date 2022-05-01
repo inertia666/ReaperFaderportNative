@@ -19,6 +19,8 @@ static int g_number_of_tracks_last = 0;
 static VirtualSurface g_vs_busview;
 static VirtualSurface g_vs_allview;
 static VirtualSurface g_vs_vcaview;
+static VirtualSurface g_vs_audioview;
+static VirtualSurface g_vs_viview;
 static VirtualSurface* g_vs_currentview;
 
 #pragma region midi
@@ -46,8 +48,18 @@ void CSurf_Faderport::OnMidiEvent(MIDI_event_t* evt) {
 	m_button_last = evt_code;
 	m_button_last_time = now;
 
+	if (isAudioEvt(evt)) {
+		SetAudioViewState();
+		return;
+	}
+
 	if (isBusEvt(evt)) {
 		SetBusViewState();
+		return;
+	}
+
+	if (isVIEvt(evt)) {
+		SetVIViewState();
 		return;
 	}
 
@@ -250,6 +262,22 @@ bool CSurf_Faderport::isBusEvt(MIDI_event_t* evt) {
 	int midi_code = evt->midi_message[1];
 
 	return (midi_code == B_BUS);
+}
+
+bool CSurf_Faderport::isVIEvt(MIDI_event_t* evt) {
+	if (!m_Functions.isBtn(evt)) return false;
+
+	int midi_code = evt->midi_message[1];
+
+	return (midi_code == B_VI);
+}
+
+bool CSurf_Faderport::isAudioEvt(MIDI_event_t* evt) {
+	if (!m_Functions.isBtn(evt)) return false;
+
+	int midi_code = evt->midi_message[1];
+
+	return (midi_code == B_AUDIO);
 }
 
 bool CSurf_Faderport::isVCAEvt(MIDI_event_t* evt) {
@@ -539,25 +567,49 @@ void CSurf_Faderport::ClearPrevNextLED() {
 }
 
 // Surface event functions
-void CSurf_Faderport::SetBusLED() {
+void CSurf_Faderport::SetAudioLED() {
+	m_midiout->Send(BTN, B_AUDIO, STATE_ON, -1);
+	m_midiout->Send(BTN, B_BUS, STATE_OFF, -1);
+	m_midiout->Send(BTN, B_VCA, STATE_OFF, -1);
+	m_midiout->Send(BTN, B_VI, STATE_OFF, -1);
+	m_midiout->Send(BTN, B_ALL, STATE_OFF, -1);
 
+	m_Functions.SetBtnColour(B_BUS, 33554431);
+}
+
+void CSurf_Faderport::SetBusLED() {
+	m_midiout->Send(BTN, B_AUDIO, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_BUS, STATE_ON, -1);
 	m_midiout->Send(BTN, B_VCA, STATE_OFF, -1);
+	m_midiout->Send(BTN, B_VI, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_ALL, STATE_OFF, -1);
 
 	m_Functions.SetBtnColour(B_BUS, 33554431);
 }
 
 void CSurf_Faderport::SetVCALED() {
+	m_midiout->Send(BTN, B_AUDIO, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_BUS, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_VCA, STATE_ON, -1);
+	m_midiout->Send(BTN, B_VI, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_ALL, STATE_OFF, -1);
 	m_Functions.SetBtnColour(B_VCA, 33554431);
 }
 
-void CSurf_Faderport::SetAllLED() {
+void CSurf_Faderport::SetVILED() {
+	m_midiout->Send(BTN, B_AUDIO, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_BUS, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_VCA, STATE_OFF, -1);
+	m_midiout->Send(BTN, B_VI, STATE_ON, -1);
+	m_midiout->Send(BTN, B_ALL, STATE_OFF, -1);
+	m_Functions.SetBtnColour(B_VI, 33554431);
+}
+
+void CSurf_Faderport::SetAllLED() {
+	m_midiout->Send(BTN, B_AUDIO, STATE_OFF, -1);
+	m_midiout->Send(BTN, B_BUS, STATE_OFF, -1);
+	m_midiout->Send(BTN, B_VCA, STATE_OFF, -1);
+	m_midiout->Send(BTN, B_VI, STATE_OFF, -1);
 	m_midiout->Send(BTN, B_ALL, STATE_ON, -1);
 	m_Functions.SetBtnColour(B_ALL, 33554431);
 }
@@ -721,24 +773,48 @@ void CSurf_Faderport::SetSendsState() {
 	g_send_state = !g_send_state;
 }
 
+void CSurf_Faderport::SetAudioViewState() {
+	m_surfaceState.SetAudioView(1);
+	m_surfaceState.SetBusView(0);
+	m_surfaceState.SetVCAView(0);
+	m_surfaceState.SetAllView(0);
+	m_surfaceState.SetVIView(0);
+	ClearCaches();
+}
+
 void CSurf_Faderport::SetBusViewState() {
+	m_surfaceState.SetAudioView(0);
 	m_surfaceState.SetBusView(1);
 	m_surfaceState.SetVCAView(0);
 	m_surfaceState.SetAllView(0);
+	m_surfaceState.SetVIView(0);
 	ClearCaches();
 }
 
 void CSurf_Faderport::SetVCAViewState() {
+	m_surfaceState.SetAudioView(0);
 	m_surfaceState.SetBusView(0);
 	m_surfaceState.SetVCAView(1);
 	m_surfaceState.SetAllView(0);
+	m_surfaceState.SetVIView(0);
 	ClearCaches();
 }
 
 void CSurf_Faderport::SetAllViewState() {
+	m_surfaceState.SetAudioView(0);
 	m_surfaceState.SetBusView(0);
 	m_surfaceState.SetVCAView(0);
 	m_surfaceState.SetAllView(1);
+	m_surfaceState.SetVIView(0);
+	ClearCaches();
+}
+
+void CSurf_Faderport::SetVIViewState() {
+	m_surfaceState.SetAudioView(0);
+	m_surfaceState.SetBusView(0);
+	m_surfaceState.SetVCAView(0);
+	m_surfaceState.SetAllView(0);
+	m_surfaceState.SetVIView(1);
 	ClearCaches();
 }
 
@@ -865,8 +941,10 @@ void CSurf_Faderport::SyncReaperToSurface(DWORD now) {
 	// These functions act as caches to stop the Faderport updating its state each cycle
 	CacheRepeatState();
 	CacheMetronomeState();
+	CacheAudioViewState();
 	CacheBusViewState();
 	CacheVCAViewState();
+	CacheVIViewState();
 	CacheAllViewState();
 	CacheChannelState();
 	CacheBankState();
@@ -976,6 +1054,17 @@ int CSurf_Faderport::CalculateMeter(MediaTrack* track, int surface_displayid, in
 	return v;
 }
 
+void CSurf_Faderport::CacheAudioViewState() {
+
+	int state = m_surfaceState.GetAudioView();
+
+	if (m_audio_lastpos == state) return;
+
+	m_audio_lastpos = state;
+
+	SetAudioLED();
+}
+
 void CSurf_Faderport::CacheBusViewState() {
 
 	int state = m_surfaceState.GetBusView();
@@ -995,6 +1084,16 @@ void CSurf_Faderport::CacheVCAViewState() {
 	m_vca_lastpos= state;
 
 	SetVCALED();
+}
+
+void CSurf_Faderport::CacheVIViewState() {
+	int state = m_surfaceState.GetVIView();
+
+	if (m_vi_lastpos == state) return;
+
+	m_vi_lastpos = state;
+
+	SetVILED();
 }
 
 void CSurf_Faderport::CacheAllViewState() {
@@ -1362,16 +1461,21 @@ void CSurf_Faderport::OnTrackSelection(MediaTrack* track) {
 }
 
 void  CSurf_Faderport::UpdateVirtualLayoutViews() {
+	int track_id_audio = 0;
 	int track_id_bus = 0;
 	int track_id_vca = 0;
+	int track_id_midi = 0;
+	int track_id_vi = 0;
 	int track_id_all = 0;
 	int current_reaper_trackId = 0;
 	int max_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetPrevNextOffset();
 
+	g_vs_audioview = {};
+	g_vs_viview = {};
 	g_vs_busview = {};
-	g_vs_allview = {};
 	g_vs_vcaview = {};
-
+	g_vs_allview = {};
+	
 	int prevnext_offset = m_surfaceState.GetPrevNextOffset();
 
 	while (current_reaper_trackId < max_tracks) {
@@ -1381,10 +1485,10 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 
 		if (!track) continue;
 
-		int vca_l_lo = GetSetTrackGroupMembership(track, "VOLUME_VCA_LEAD", 0, 0);
-		int vca_l_hi = GetSetTrackGroupMembershipHigh(track, "VOLUME_VCA_LEAD", 0, 0);
+		//int vca_l_lo = GetSetTrackGroupMembership(track, "VOLUME_VCA_LEAD", 0, 0);
+		//int vca_l_hi = GetSetTrackGroupMembershipHigh(track, "VOLUME_VCA_LEAD", 0, 0);
 
-		bool isVCATrack = vca_l_lo > 0 || vca_l_hi > 0;
+		//bool isVCATrack = vca_l_lo > 0 || vca_l_hi > 0;
 
 		int trackNumber = (int)GetMediaTrackInfo_Value(track, "IP_TRACKNUMBER");
 		char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
@@ -1392,7 +1496,16 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 		if (!title) continue;
 
 		// Bus view - use the bus prefix from config
-		if (isBusTrack(title)) {
+		if (isAudioTrack(title)) {
+			if (track_id_midi > 15) continue;
+
+			g_vs_audioview.media_track[track_id_audio] = track;
+			g_vs_audioview.media_track_last[track_id_audio] = track;
+			g_vs_audioview.media_track_number[track_id_audio] = trackNumber;
+			g_vs_audioview.display_number[track_id_audio] = track_id_audio;
+			g_vs_audioview.number_of_tracks += 1;
+			track_id_audio++;
+		}else if (isBusTrack(title)) {
 			if (track_id_bus > 15) continue;
 
 			g_vs_busview.media_track[track_id_bus] = track;
@@ -1401,10 +1514,8 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 			g_vs_busview.display_number[track_id_bus] = track_id_bus;
 			g_vs_busview.number_of_tracks += 1;
 			track_id_bus++;
-
-		
 		}// Vca view
-		else if (isVCATrack) {
+		else if (isVCATrack(track)) {
 			if (track_id_vca > 15) continue;
 
 			g_vs_vcaview.media_track[track_id_vca] = track;
@@ -1414,8 +1525,17 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 			g_vs_vcaview.number_of_tracks += 1;
 			track_id_vca++;
 		}
+		else if (isVITrack(title)) {
+			if (track_id_vi > 15) continue;
+
+			g_vs_viview.media_track[track_id_vi] = track;
+			g_vs_viview.media_track_last[track_id_vi] = track;
+			g_vs_viview.media_track_number[track_id_vi] = trackNumber;
+			g_vs_viview.display_number[track_id_vi] = track_id_vi;
+			g_vs_viview.number_of_tracks += 1;
+			track_id_vi++;
+		}
 		else { // All view vsurface
-			//if (track_id_all > 32) continue;
 			if (track_id_all > 15) continue;
 			g_vs_allview.media_track[track_id_all] = track;
 			g_vs_allview.media_track_last[track_id_all] = track;
@@ -1436,6 +1556,13 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 		g_vs_currentview = &g_vs_vcaview;
 	}
 
+	if (m_surfaceState.GetAudioView()) {
+		g_vs_currentview = &g_vs_audioview;
+	}
+
+	if (m_surfaceState.GetVIView()) {
+		g_vs_currentview = &g_vs_viview;
+	}
 };
 
 bool CSurf_Faderport::isBusTrack(std::string title) {
@@ -1444,10 +1571,25 @@ bool CSurf_Faderport::isBusTrack(std::string title) {
 	return (title.find(prefix) != std::string::npos);
 }
 
-//bool CSurf_Faderport::isVCATrack(std::string title) {
-//
-//	return false;
-//}
+bool CSurf_Faderport::isVCATrack(MediaTrack* track) {
+
+	int vca_l_lo = GetSetTrackGroupMembership(track, "VOLUME_VCA_LEAD", 0, 0);
+	int vca_l_hi = GetSetTrackGroupMembershipHigh(track, "VOLUME_VCA_LEAD", 0, 0);
+
+	return vca_l_lo > 0 || vca_l_hi > 0;
+}
+
+bool CSurf_Faderport::isAudioTrack(std::string title) {
+	std::string prefix = m_surfaceState.GetAudioPrefix();
+
+	return (title.find(prefix) != std::string::npos);
+}
+
+bool CSurf_Faderport::isVITrack(std::string title) {
+	std::string prefix = m_surfaceState.GetVIPrefix();
+
+	return (title.find(prefix) != std::string::npos);
+}
 
 // End Reaper events
 // --------------------------------------------------------------------------------
@@ -1470,11 +1612,14 @@ CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
 	m_surfaceState.SetPrevNextOffset(0);
 	m_surfaceState.SetBusView(0);
 	m_surfaceState.SetVCAView(0);
+	m_surfaceState.SetVIView(0);
+	m_surfaceState.SetAudioView(0);
 	m_surfaceState.SetAllView(1);
 	m_surfaceState.SetBank(1);
 	m_surfaceState.SetChannel(0);
 	m_surfaceState.SetBusPrefix(bus_prefix);
-
+	m_surfaceState.SetVIPrefix(vi_prefix);
+	m_surfaceState.SetAudioPrefix(audio_prefix);
 	// Set global states
 	g_fader_pan = 0;
 	g_send_state = 0;
@@ -1541,6 +1686,13 @@ void CSurf_Faderport::GetCurrentVirtualSurfaceView() {
 		g_vs_currentview = &g_vs_vcaview;
 	}
 
+	if (m_surfaceState.GetVIView()) {
+		g_vs_currentview = &g_vs_viview;
+	}
+
+	if (m_surfaceState.GetAudioView()) {
+		g_vs_currentview = &g_vs_audioview;
+	}
 }
 
 CSurf_Faderport::~CSurf_Faderport() {
@@ -1576,6 +1728,8 @@ void CSurf_Faderport::ClearCaches() {
 	m_bank_lastpos = 0;
 	m_bus_lastpos = 0;
 	m_vca_lastpos = 0;
+	m_audio_lastpos = 0;
+	m_vi_lastpos = 0;
 	m_all_lastpos = 0;
 
 	ClearSelectButtonCache();
@@ -1662,7 +1816,7 @@ void CSurf_Faderport::LoadConfig(char* pfilename) {
 	std::string fullpath = path + "\\UserPlugins\\" + filename;
 
 	// Names of the variables in the config file.
-	std::vector<std::string> ln = { "faderport", "start_track","bus_prefix" };
+	std::vector<std::string> ln = { "faderport","start_track","bus_prefix","audio_prefix","vi_prefix"};
 
 	// Open the config file for reading
 	std::ifstream f_in(fullpath);
@@ -1670,7 +1824,7 @@ void CSurf_Faderport::LoadConfig(char* pfilename) {
 		cout << "Error reading file !" << endl;
 	else
 	{
-		CFG::ReadFile(f_in, ln, faderport, start_track, bus_prefix);
+		CFG::ReadFile(f_in, ln, faderport, start_track, bus_prefix, audio_prefix, vi_prefix);
 		f_in.close();
 	}
 }

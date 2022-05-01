@@ -132,11 +132,11 @@ void Assign(unsigned & var, const std::string & name, const std::string & value)
 {
     var = std::stoul(value);
 }
-
-void Assign(size_t & var, const std::string & name, const std::string & value)
-{
-    var = std::stoul(value);
-}
+//
+//void Assign(size_t & var, const std::string & name, const std::string & value)
+//{
+//    var = std::stoul(value);
+//}
 
 void Assign(bool & var, const std::string & name, const std::string & value)
 {

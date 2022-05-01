@@ -50,7 +50,7 @@
     <SccProjectName />
     <SccLocalPath />
     <ProjectGuid>{2611354E-BF02-41DF-A603-57CD6E54EAF7}</ProjectGuid>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
     <ProjectName>reaper_faderport16</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -160,7 +160,7 @@
       </AdditionalOptions>
     </Link>
     <PostBuildEvent>
-      <Command>copy "Release\reaper_faderport16_x86.dll" "%APPDATA%\REAPER\UserPlugins\"</Command>
+      <Command>copy "x86\Release\reaper_faderport16_x86.dll" "c:\ReaperDev\UserPlugins\"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -10,8 +10,13 @@ private:
 	int m_surface_id;
 	int m_bus_view_state;
 	int m_vca_view_state;
+	int m_audio_view_state;
+	int m_vi_view_state;
 	int m_all_view_state;
+	std::string m_audio_prefix;
 	std::string m_bus_prefix;
+	std::string m_midi_prefix;
+	std::string m_vi_prefix;
 	int m_shift_state;
 	int m_channel_state;
 	int m_bank_state;
@@ -43,11 +48,23 @@ public:
 	void SetVCAView(int state) { m_vca_view_state = state; }
 	int GetVCAView() { return m_vca_view_state; }
 
+	void SetAudioView(int state) { m_audio_view_state = state; }
+	int GetAudioView() { return m_audio_view_state; }
+
+	void SetVIView(int state) { m_vi_view_state = state; }
+	int GetVIView() { return m_vi_view_state; }
+
 	void SetAllView(int state) { m_all_view_state = state; }
 	int GetAllView() { return m_all_view_state; }
 
 	void SetBusPrefix(std::string state) { m_bus_prefix = state; }
 	std::string GetBusPrefix() { return m_bus_prefix; }
+
+	void SetAudioPrefix(std::string state) { m_audio_prefix = state; }
+	std::string GetAudioPrefix() { return m_audio_prefix; }
+
+	void SetVIPrefix(std::string state) { m_vi_prefix = state; }
+	std::string GetVIPrefix() { return m_vi_prefix; }
 
 	void SetDoPrevNext(int state) { m_do_prevnext = state; }
 	int GetDoPrevNext() { return m_do_prevnext; }

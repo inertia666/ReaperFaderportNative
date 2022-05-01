@@ -70,6 +70,8 @@ public:
 
 	int m_bus_lastpos = 0;
 	int m_vca_lastpos =0;
+	int m_audio_lastpos = 0;
+	int m_vi_lastpos = 0;
 	int m_all_lastpos = 0;
 	int m_bank_lastpos = 0;
 	int m_channel_lastpos = 0;
@@ -120,7 +122,9 @@ public:
 	bool isMasterEvt(MIDI_event_t*);
 	bool isShiftEvt(MIDI_event_t*);
 	bool isPanEvt(MIDI_event_t*);
+	bool isAudioEvt(MIDI_event_t*);
 	bool isBusEvt(MIDI_event_t*);
+	bool isVIEvt(MIDI_event_t*);
 	bool isVCAEvt(MIDI_event_t*);
 	bool isSave(MIDI_event_t*);
 	bool isRedo(MIDI_event_t*);
@@ -133,9 +137,11 @@ public:
 
 	// Buttons
 	void SetChannelBankLED(); // radio behaviour with Bank LED
-	void SetLinkLED(); //  
+	void SetLinkLED(); // 
+	void SetAudioLED(); //
 	void SetBusLED(); //  
 	void SetVCALED(); //  
+	void SetVILED(); 
 	void SetAllLED(); 
 
 	void SoloSelectedTrack(int, bool);
@@ -148,8 +154,10 @@ public:
 	void SoloClearAll(int); // Clear all solod tracks and LED
 	void MuteClearAll(int); // Clear all muted tracks and LED
 	void CacheRepeatState(); // toggle repeat in Reaper and LED
+	void CacheAudioViewState(); // Audio LED
 	void CacheBusViewState(); // Bus LED
 	void CacheVCAViewState(); // VCA LED
+	void CacheVIViewState(); // VI LED
 	void CacheAllViewState(); // All LED
 	void CacheBankState(); //Channel Bank LEDs
 	void CacheChannelState(); //Channel Bank LEDs
@@ -175,8 +183,10 @@ public:
 	void ClearRedoLED();
 
 	void SetPanState();
+	void SetAudioViewState();
 	void SetBusViewState();
 	void SetVCAViewState();
+	void SetVIViewState();
 	void SetAllViewState();
 
 	void SetChannelState();
@@ -220,9 +230,10 @@ public:
 	void UpdateVirtualLayoutViews();
 	void PrevNextCheck();
 
+	bool isAudioTrack(std::string);
 	bool isBusTrack(std::string);
-	//bool isViTrack(std::string);
-	//bool isVcaTrack(std::string);
+	bool isVCATrack(MediaTrack*);
+	bool isVITrack(std::string);
 
 	// Reaper API
 	const char* GetTypeString() override;
@@ -237,15 +248,16 @@ public:
 	int start_track; // track offset
 	int bus;
 	int surface_id;
+	std::string audio_prefix;
 	std::string bus_prefix;
+	std::string midi_prefix;
+	std::string vi_prefix;
 
 	int faderport;
 	int link; // surface follows Reaper
 	int track_fix; // show only the first x number of tracks on the surface
 	int spread; // start surfaces in spread mode
 	int spread_position;
-
-
 };
 
 #endif
