@@ -31,6 +31,7 @@ The extension may crash Reaper. Don't use it on production environments if you a
 - Edit plugins (opens the plugin window only of the selected tracks)
 - Automation buttons
 - A way to implement busses and view them on the surface
+- VCA Leader view
 - Navigation with transport wheel (not working very well)
 - Pin the master bus to the surface 
 - Enable bypass, macro, link, VI, Audio buttons to assign to custom actions
@@ -39,7 +40,6 @@ The extension may crash Reaper. Don't use it on production environments if you a
 
 ## _What is not yet implemented?_
 - Sends
-- VCA leader view
 - Zoom, Scroll, Section, Marker buttons. I haven't decided if I want to use them or how I want to use them
 - Limited support for Nagivation Wheel. At the moment, it only works to control the Master buss volume
 - RTZ << >> buttons. They go to the start/end of the project but are not useful right now.
@@ -58,8 +58,7 @@ The intention behind the contoller is to partially mimic using a regular mixing 
 - _Bus view_ will not change the TCP or Mixer view in Reaper when showing busses. The driver will hold the state internally and create a virtual view to reflect on the Faderport. This means, if you press the _Bus_ button it will 
  display all your tracks that use the bus prefix tag in _config.txt_ file. 
 
-- _VCA view_* will not change the TCP or Mixer view in Reaper to show only VCA leaders. The driver will hold the state internally and create a virtual view to reflect on the Faderport. This means, if you press the _VCA_ button it will 
- display on the Faderport all the VCA leader tracks. ***NOT IMPLEMENTED YET**
+- _VCA view_ will show only on the Faderport and will not show/hide non-VCA tracks on the TCP or Mixer view in Reaper. The driver will hold the state internally and create a virtual view to reflect on the Faderport.  
 
 ## _Button behaviour_
 
@@ -78,7 +77,7 @@ The following buttons are currently implemented with details on how they work:
 | Edit Plugins| This will open the FX window for any selected tracks. It does not provide plugin parameter editing |
 | Pan | Ability to set the pan with a volume fader |
 | Bus | By adding the line "bus_prefix=A-" you can mark track names with a prefix (in this case, "A-", and show these tracks on the Faderport. Replace "A-" with characters of your choice. <br> |
-| VCA | Will show VCA leader tracks in the future |
+| VCA | Will show VCA leader tracks |
 | All | Show all tracks not in the bus filter list |
 | Channel | _Prev/Next_ will move the surface display by -1/+1 channel at a time |
 | Bank | _Prev/Next_ will move the surface display by 8 or 16 channels at a time |
