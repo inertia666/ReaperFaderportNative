@@ -76,9 +76,11 @@ The following buttons are currently implemented with details on how they work:
 | Select | Pressing _Select_ will select the track. To exclusively select a track, double press the _Select_ button. To clear all selected tracks, double press <br> to exclusively select then click one more time to unselect the track. A single volume fader will control all selected tracks
 | Edit Plugins| This will open the FX window for any selected tracks. It does not provide plugin parameter editing |
 | Pan | Ability to set the pan with a volume fader |
-| Bus | By adding the line "bus_prefix=A-" you can mark track names with a prefix (in this case, "A-", and show these tracks on the Faderport. Replace "A-" with characters of your choice. <br> |
+| Audio | Show prefixed "audio_prefix=A-" tracks set in the config file (see Bus) |
+| VI | Show prefixed "vi_prefix=V-" tracks set in the config file (see Bus) |
+| Bus | By adding the line "bus_prefix=B-" you can mark track names with a prefix (in this case, "B-", and show these tracks on the Faderport. Replace "B-" with any characters of your choice. <br> |
 | VCA | Will show VCA leader tracks |
-| All | Show all tracks not in the bus filter list |
+| All | Show all tracks not in the prefix filter list |
 | Channel | _Prev/Next_ will move the surface display by -1/+1 channel at a time |
 | Bank | _Prev/Next_ will move the surface display by 8 or 16 channels at a time |
 | Prev | Move the surface display left by one channel or a bank of 8/16 depending on the _Channel_ or _Bank_ buttons status |
@@ -107,14 +109,22 @@ Set the track to start from:
 start_track=0
 ```
 
-If you want to use busses and have the bus button display them on Faderport then you can add a track title prefix here to identify busses. To activate them, make sure your track has this prefix in the start of its name.
+Prefix filter list:
+
+_Audio/VI/Bus/VCA/All_ work as radio buttons. By creating a prefix in the config you can use these buttons to show/hide groups of tracks from the Faderport.
+
+E.g If you want to use fake busses and have the bus button display them on Faderport then you can add a track title prefix here to identify busses. To activate them, make sure your track has the defined prefix in the start of its name.
 
 ```sh
-bus_prefix=A-
+bus_prefix=B- // Add B- in the start of any tracks that will be filtered by the bus button
+audio_prefix=A- // Add A- in the start of any tracks that will be filtered by the audio button
+vi_prefix=V- // Add V- in the start of any tracks that will be filtered by the VI button
 ```
-For example, to create a bus track for Drums, rename the track to _A-DRUMS_. This track will now be removed from the main view and will be shown when pressing the _Bus_ button on the Faderport. You can make the prefix anything you like.
+For example, to create a bus track for Drums, rename the track to _B-DRUMS_. This track will now be removed from the main view and will be shown when pressing the _Bus_ button on the Faderport. You can make the prefix anything you like. The filter will check for a matching prefix in each track.
 
 Since Reaper doesn't really have traditional busses, you can think of this as a kind of filter instead that is engaged when pressing _Bus_. 
+
+***Note*** The All button doesn't show all the tracks. It shows everything not in the prefix list.
 
 ## _Non-functioning buttons_
 All buttons should trigger a MIDI event, except for Shift. You can set up actions from the Reaper action list to trigger an action from any button on the Faderport.
@@ -140,3 +150,7 @@ All buttons should trigger a MIDI event, except for Shift. You can set up action
    [download]: <https://stash.reaper.fm/v/43911/Fp16.zip>
    [csi]: <https://github.com/GeoffAWaddington/reaper_csurf_integrator/wiki>
    [airon]: <https://forum.cockos.com/showthread.php?t=240162>
+
+## _Change_log_
+
++ audio/vi/bus/vca/all radio buttons with prefix for audio/vi/bus
