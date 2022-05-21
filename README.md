@@ -12,9 +12,9 @@ The code base is originally designed to control two Faderport units at the same 
 
 Because I do not know of anyone using two Faderports or expect them to understand my view on how they should be controlled, I have released this simplified code.
 
-If you want more flexibility and customisation, then I recommend using the _Control Surface Integrator_, by _Geoff Waddington_ and installing _Airon's_ Faderport configuration files as a starting point.  
+If you want more flexibility and customisation, then I recommend using the _Control Surface Integrator_, by _Geoff Waddington_ and installing _navelpluisje's_ Faderport configuration files as a starting point. This is now a very mature CSI implementation of the Faderport and is looking very promising!
 
-Because the _Control Surface Integrator_ is a stateless design and will only mirror Reaper, it does not really work exactly as I want it to. This is why I developed a native controller for my own use. From my tests with the CSI, it will never work as I would like it to work because of its design ethos. This is not a criticism aimed at the CSI because it is a highly ambitious project and cleverly implemented and I myself use it for other DAW controllers. I use the CSI to control my _Console One_.
+Because the _Control Surface Integrator_ is a stateless design and will only mirror Reaper's views, it does not really work exactly as I want it to. This is why I developed a native controller for my own use. However, since testing navelpluisje's implementation I will likely move my FP16 to the CSI and retain my FP8 as a stateless controller.
 
 I do encourage the use of the _Control Surface Integrator_ because it is a very mature project with plenty of contributors and more people to help with your problems. It opens up a world of flexibility.
 This driver will also work even with the CSI controller installed (as long as you are not using the CSI to control your Faderport).
@@ -32,9 +32,11 @@ The extension may crash Reaper. Don't use it on production environments if you a
 - Automation buttons
 - A way to implement busses and view them on the surface
 - VCA Leader view
+- VI view (filters tracks if there is a virtual instrument somewhere in the fx chain)
 - Navigation with transport wheel (not working very well)
 - Pin the master bus to the surface 
-- Enable bypass, macro, link, VI, Audio buttons to assign to custom actions
+- Link - toggle follow Reaper on/off
+- Enable bypass, macro, buttons to assign to custom actions
 - Pan/Param wheel
 - Shift + Save, Redo, Undo
 
@@ -77,9 +79,9 @@ The following buttons are currently implemented with details on how they work:
 | Edit Plugins| This will open the FX window for any selected tracks. It does not provide plugin parameter editing |
 | Pan | Ability to set the pan with a volume fader |
 | Audio | Show prefixed "audio_prefix=A-" tracks set in the config file (see Bus) |
-| VI | Show prefixed "vi_prefix=V-" tracks set in the config file (see Bus) |
+| VI | Show tracks that have virtual instruments) |
 | Bus | By adding the line "bus_prefix=B-" you can mark track names with a prefix (in this case, "B-", and show these tracks on the Faderport. Replace "B-" with any characters of your choice. <br> |
-| VCA | Will show VCA leader tracks |
+| VCA | Show VCA leader tracks |
 | All | Show all tracks not in the prefix filter list |
 | Channel | _Prev/Next_ will move the surface display by -1/+1 channel at a time |
 | Bank | _Prev/Next_ will move the surface display by 8 or 16 channels at a time |
@@ -145,11 +147,11 @@ All buttons should trigger a MIDI event, except for Shift. You can set up action
 ## _Links_
 - [Download] - 64bit Windows Build (at the moment this is buggy as cleaning up the code has caused breakage)
 - [CSI] - Control Surface Integrator
-- [Airon] - Airon's Faderport config for CSI
+- [Navelpluisje] - Navelpluisje's Faderport config for CSI
 
    [download]: <https://stash.reaper.fm/v/43911/Fp16.zip>
    [csi]: <https://github.com/GeoffAWaddington/reaper_csurf_integrator/wiki>
-   [airon]: <https://forum.cockos.com/showthread.php?t=240162>
+   [navelpluisje]: <https://github.com/navelpluisje/reasonus-faderport/releases/tag/v0.0.1-alpha-10>
 
 ## _Change_log_
 
