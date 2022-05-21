@@ -147,7 +147,7 @@ All buttons should trigger a MIDI event, except for Shift. You can set up action
 ## _Links_
 - [Download] - 64bit Windows Build (at the moment this is buggy as cleaning up the code has caused breakage)
 - [CSI] - Control Surface Integrator
-- [Navelpluisje] - Navelpluisje's Faderport config for CSI
+- [Navelpluisje] - Navelpluisje's Faderport installer using a custom build of CSI
 
    [download]: <https://stash.reaper.fm/v/43911/Fp16.zip>
    [csi]: <https://github.com/GeoffAWaddington/reaper_csurf_integrator/wiki>
