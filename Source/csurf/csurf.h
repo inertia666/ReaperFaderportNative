@@ -99,6 +99,7 @@ extern void (*mkvolpanstr)(char* str, double vol, double pan);
 extern void (*mkvolstr)(char* str, double vol);
 extern void (*mkpanstr)(char* str, double pan);
 
+extern int (*TrackFX_GetInstrument)(MediaTrack* tr);
 extern int (*TrackFX_GetCount)(MediaTrack* tr);
 extern int (*TrackFX_GetNumParams)(MediaTrack* tr, int fx);
 extern double (*TrackFX_GetParam)(MediaTrack* tr, int fx, int param, double* minval, double* maxval);

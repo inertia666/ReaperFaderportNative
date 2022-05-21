@@ -1676,14 +1676,12 @@ bool CSurf_Faderport::isAudioTrack(MediaTrack* track) {
 }
 
 bool CSurf_Faderport::isVITrack(MediaTrack* track) {
-	std::string prefix = m_surfaceState.GetVIPrefix();
 
-	char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
+	if (track == NULL) return false;
 
-	if (track == NULL || title == NULL) return false;
+	int vi = TrackFX_GetInstrument(track);
 
-	std::string t = title;
-	return t.find(prefix) != std::string::npos;
+	return vi > 0;
 }
 
 // End Reaper events
@@ -1703,7 +1701,6 @@ CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
 	m_surfaceState.SetSurfaceSize(m_surfaceState.GetIsFP8() ? FP8_SIZE : FP16_SIZE);
 	m_surfaceState.SetTrackOffset(start_track == 0 ? 0 : start_track - 1);
 	m_surfaceState.SetPrevNextOffset(0);
-	m_surfaceState.SetBusView(0);
 
 	if (start_bus) {
 		SetBusViewState();
@@ -1712,9 +1709,7 @@ CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
 		SetAllViewState();
 	}
 
-	m_surfaceState.SetVCAView(0);
-	m_surfaceState.SetVIView(0);
-	m_surfaceState.SetAudioView(0);
+
 	m_surfaceState.SetBank(1);
 	m_surfaceState.SetChannel(0);
 	m_surfaceState.SetBusPrefix(bus_prefix);
@@ -1921,7 +1916,7 @@ void CSurf_Faderport::LoadConfig(char* pfilename) {
 	std::string fullpath = path + "\\UserPlugins\\" + filename;
 
 	// Names of the variables in the config file.
-	std::vector<std::string> ln = { "faderport","start_track","bus_prefix","audio_prefix","vi_prefix","start_bus","track_fix","mcp_mode", "follow"};
+	std::vector<std::string> ln = { "faderport","start_track","bus_prefix","audio_prefix","start_bus","track_fix","mcp_mode", "follow"};
 
 	// Open the config file for reading
 	std::ifstream f_in(fullpath);
@@ -1929,7 +1924,7 @@ void CSurf_Faderport::LoadConfig(char* pfilename) {
 		cout << "Error reading file !" << endl;
 	else
 	{
-		CFG::ReadFile(f_in, ln, faderport, start_track, bus_prefix, audio_prefix, vi_prefix, start_bus, track_fix, mcp_mode, follow);
+		CFG::ReadFile(f_in, ln, faderport, start_track, bus_prefix, audio_prefix, start_bus, track_fix, mcp_mode, follow);
 		f_in.close();
 	}
 }

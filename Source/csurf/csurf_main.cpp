@@ -98,6 +98,7 @@ void (*MoveEditCursor)(double adjamt, bool dosel);
 void (*adjustZoom)(double amt, int forceset, bool doupd, int centermode); // forceset=0, doupd=true, centermode=-1 for default
 double (*GetHZoomLevel)(); // returns pixels/second
 
+int (*TrackFX_GetInstrument)(MediaTrack* tr);
 int (*TrackFX_GetCount)(MediaTrack* tr);
 int (*TrackFX_GetNumParams)(MediaTrack* tr, int fx);
 bool (*TrackFX_GetFXName)(MediaTrack* tr, int fx, char* buf, int buflen);
@@ -117,6 +118,7 @@ void* (*GetSetMediaTrackInfo)(MediaTrack* tr, const char* parmname, void* setNew
 double (*GetMediaTrackInfo_Value)(MediaTrack* tr, const char* parmname);
 char* (*GetResourcePath)();
 void* (*get_config_var)(const char* name, int* szout);
+
 
 extern "C"
 {
@@ -202,6 +204,7 @@ extern "C"
 			IMPAPI(adjustZoom)
 			IMPAPI(GetHZoomLevel)
 
+			IMPAPI(TrackFX_GetInstrument)
 			IMPAPI(TrackFX_GetCount)
 			IMPAPI(TrackFX_GetNumParams)
 			IMPAPI(TrackFX_GetParam)
