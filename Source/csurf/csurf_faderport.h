@@ -226,14 +226,18 @@ public:
 	void OnTrackSelection(MediaTrack* trackid) override;
 	void SetTrackListChange() override;
 
-	//
+	int CountAudioTracks();
+	int CountVITracks();
+	int CountBusTracks();
+	int CountVCATracks();
+
 	void UpdateVirtualLayoutViews();
 	void PrevNextCheck();
 
-	bool isAudioTrack(std::string);
-	bool isBusTrack(std::string);
+	bool isAudioTrack(MediaTrack*);
+	bool isBusTrack(MediaTrack*);
 	bool isVCATrack(MediaTrack*);
-	bool isVITrack(std::string);
+	bool isVITrack(MediaTrack*);
 
 	// Reaper API
 	const char* GetTypeString() override;
@@ -246,18 +250,17 @@ public:
 	void LoadConfig(char* filename);
 
 	int start_track; // track offset
-	int bus;
+	int start_bus; // start in bus mode
 	int surface_id;
+	int mcp_mode;
+	int follow;
 	std::string audio_prefix;
 	std::string bus_prefix;
 	std::string midi_prefix;
 	std::string vi_prefix;
-
 	int faderport;
 	int link; // surface follows Reaper
 	int track_fix; // show only the first x number of tracks on the surface
-	int spread; // start surfaces in spread mode
-	int spread_position;
 };
 
 #endif

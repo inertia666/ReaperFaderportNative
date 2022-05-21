@@ -896,6 +896,22 @@ void CSurf_Faderport::DoPrevNext(int direction) {
 
 	int number_reaper_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetTrackOffset();
 
+	if (m_surfaceState.GetAudioView() == 1) {
+		number_reaper_tracks = CountAudioTracks();
+	}
+
+	if (m_surfaceState.GetVIView() == 1) {
+		number_reaper_tracks = CountVITracks();
+	}
+
+	if (m_surfaceState.GetBusView() == 1) {
+		number_reaper_tracks = CountBusTracks();
+	}
+
+	if (m_surfaceState.GetVCAView() == 1) {
+		number_reaper_tracks = CountVCATracks();
+	}
+
 	if (number_reaper_tracks <= surface_size) return;
 
 	// Find direction
@@ -1374,6 +1390,24 @@ void CSurf_Faderport::MoveToBank(int track_offset) {
 	int number_reaper_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetTrackOffset();
 	int selectedTrackBank = GetBankNumberFromTrackId(track_offset);
 	int surface_size = m_surfaceState.GetSurfaceSize(); 
+
+	if (m_surfaceState.GetAudioView() == 1) {
+		number_reaper_tracks = CountAudioTracks();
+	}
+
+	if (m_surfaceState.GetVIView() == 1) {
+		number_reaper_tracks = CountVITracks();
+	}
+
+	if (m_surfaceState.GetBusView() == 1) {
+		number_reaper_tracks = CountBusTracks();
+	}
+
+	if (m_surfaceState.GetVCAView() == 1) {
+		number_reaper_tracks = CountVCATracks();
+	}
+
+	if (number_reaper_tracks <= surface_size) return;
 	
 	int offset = 0;
  	
@@ -1384,9 +1418,8 @@ void CSurf_Faderport::MoveToBank(int track_offset) {
 		offset = surface_size * selectedTrackBank;
 	}
  
- 	m_surfaceState.SetSpreadPrevNextOffset(offset);
+ 	m_surfaceState.SetPrevNextOffset(offset);
 
- 
 	ClearCaches();
 }
 
@@ -1460,6 +1493,58 @@ void CSurf_Faderport::OnTrackSelection(MediaTrack* track) {
 	SetTrackSelection(track);
 }
 
+int CSurf_Faderport::CountAudioTracks() {
+	int max_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetPrevNextOffset();
+
+	int count = 0;
+	for (int i = 0; i < max_tracks; i++) {
+		MediaTrack* track = CSurf_TrackFromID(i, m_surfaceState.GetMCPMode());
+
+		if (isAudioTrack(track)) count++;
+	}
+
+	return count;
+}
+
+int CSurf_Faderport::CountVITracks() {
+	int max_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetPrevNextOffset();
+
+	int count = 0;
+	for (int i = 0; i < max_tracks; i++) {
+		MediaTrack* track = CSurf_TrackFromID(i, m_surfaceState.GetMCPMode());
+
+		if (isVITrack(track)) count++;
+	}
+
+	return count;
+}
+
+int CSurf_Faderport::CountBusTracks() {
+	int max_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetPrevNextOffset();
+
+	int count = 0;
+	for (int i = 0; i < max_tracks; i++) {
+		MediaTrack* track = CSurf_TrackFromID(i, m_surfaceState.GetMCPMode());
+
+		if (isBusTrack(track)) count++;
+	}
+
+	return count;
+}
+
+int CSurf_Faderport::CountVCATracks() {
+	int max_tracks = CSurf_NumTracks(m_surfaceState.GetMCPMode()) - m_surfaceState.GetPrevNextOffset();
+
+	int count = 0;
+	for (int i = 0; i < max_tracks; i++) {
+		MediaTrack* track = CSurf_TrackFromID(i, m_surfaceState.GetMCPMode());
+
+		if (track != NULL && isVCATrack(track)) count++;
+	}
+
+	return count;
+}
+
 void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 	int track_id_audio = 0;
 	int track_id_bus = 0;
@@ -1485,18 +1570,13 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 
 		if (!track) continue;
 
-		//int vca_l_lo = GetSetTrackGroupMembership(track, "VOLUME_VCA_LEAD", 0, 0);
-		//int vca_l_hi = GetSetTrackGroupMembershipHigh(track, "VOLUME_VCA_LEAD", 0, 0);
-
-		//bool isVCATrack = vca_l_lo > 0 || vca_l_hi > 0;
-
 		int trackNumber = (int)GetMediaTrackInfo_Value(track, "IP_TRACKNUMBER");
 		char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
 
 		if (!title) continue;
 
 		// Bus view - use the bus prefix from config
-		if (isAudioTrack(title)) {
+		if (isAudioTrack(track)) {
 			if (track_id_midi > 15) continue;
 
 			g_vs_audioview.media_track[track_id_audio] = track;
@@ -1505,7 +1585,7 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 			g_vs_audioview.display_number[track_id_audio] = track_id_audio;
 			g_vs_audioview.number_of_tracks += 1;
 			track_id_audio++;
-		}else if (isBusTrack(title)) {
+		}else if (isBusTrack(track)) {
 			if (track_id_bus > 15) continue;
 
 			g_vs_busview.media_track[track_id_bus] = track;
@@ -1525,7 +1605,7 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 			g_vs_vcaview.number_of_tracks += 1;
 			track_id_vca++;
 		}
-		else if (isVITrack(title)) {
+		else if (isVITrack(track)) {
 			if (track_id_vi > 15) continue;
 
 			g_vs_viview.media_track[track_id_vi] = track;
@@ -1565,10 +1645,15 @@ void  CSurf_Faderport::UpdateVirtualLayoutViews() {
 	}
 };
 
-bool CSurf_Faderport::isBusTrack(std::string title) {
+bool CSurf_Faderport::isBusTrack(MediaTrack* track) {
 	std::string prefix = m_surfaceState.GetBusPrefix();
 
-	return (title.find(prefix) != std::string::npos);
+	char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
+
+	if (track == NULL || title == NULL) return false;
+
+	std::string t = title;
+	return t.find(prefix) != std::string::npos;
 }
 
 bool CSurf_Faderport::isVCATrack(MediaTrack* track) {
@@ -1579,16 +1664,26 @@ bool CSurf_Faderport::isVCATrack(MediaTrack* track) {
 	return vca_l_lo > 0 || vca_l_hi > 0;
 }
 
-bool CSurf_Faderport::isAudioTrack(std::string title) {
+bool CSurf_Faderport::isAudioTrack(MediaTrack* track) {
 	std::string prefix = m_surfaceState.GetAudioPrefix();
 
-	return (title.find(prefix) != std::string::npos);
+	char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
+
+	if (track == NULL || title == NULL) return false;
+
+	std::string t = title;
+	return t.find(prefix) != std::string::npos;
 }
 
-bool CSurf_Faderport::isVITrack(std::string title) {
+bool CSurf_Faderport::isVITrack(MediaTrack* track) {
 	std::string prefix = m_surfaceState.GetVIPrefix();
 
-	return (title.find(prefix) != std::string::npos);
+	char* title = (char*)GetSetMediaTrackInfo(track, "P_NAME", NULL);
+
+	if (track == NULL || title == NULL) return false;
+
+	std::string t = title;
+	return t.find(prefix) != std::string::npos;
 }
 
 // End Reaper events
@@ -1598,28 +1693,35 @@ bool CSurf_Faderport::isVITrack(std::string title) {
 #pragma region init
 // Constructor/Initialise
 CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
-	bus = 0;
 	LoadConfig("config.txt");
 	m_surfaceState.SetSurfaceId(0);
 
 	int isfp8 = faderport == 8 ? 1 : 0;
 
-	m_surfaceState.SetMCPMode(true);
+	m_surfaceState.SetMCPMode(mcp_mode);
 	m_surfaceState.SetIsFP8(isfp8);
-	m_surfaceState.SetLink(link);
 	m_surfaceState.SetSurfaceSize(m_surfaceState.GetIsFP8() ? FP8_SIZE : FP16_SIZE);
 	m_surfaceState.SetTrackOffset(start_track == 0 ? 0 : start_track - 1);
 	m_surfaceState.SetPrevNextOffset(0);
 	m_surfaceState.SetBusView(0);
+
+	if (start_bus) {
+		SetBusViewState();
+	}
+	else {
+		SetAllViewState();
+	}
+
 	m_surfaceState.SetVCAView(0);
 	m_surfaceState.SetVIView(0);
 	m_surfaceState.SetAudioView(0);
-	m_surfaceState.SetAllView(1);
 	m_surfaceState.SetBank(1);
 	m_surfaceState.SetChannel(0);
 	m_surfaceState.SetBusPrefix(bus_prefix);
 	m_surfaceState.SetVIPrefix(vi_prefix);
 	m_surfaceState.SetAudioPrefix(audio_prefix);
+	m_surfaceState.SetLink(follow);
+
 	// Set global states
 	g_fader_pan = 0;
 	g_send_state = 0;
@@ -1809,14 +1911,17 @@ reaper_csurf_reg_t csurf_faderport_reg =
 
 void CSurf_Faderport::LoadConfig(char* pfilename) {
 	start_track = 1;
+	start_bus = 0;
+	mcp_mode = 0;
 	faderport = 8;
+	follow = 1;
 
 	std::string path = GetResourcePath();
 	std::string filename = pfilename;
 	std::string fullpath = path + "\\UserPlugins\\" + filename;
 
 	// Names of the variables in the config file.
-	std::vector<std::string> ln = { "faderport","start_track","bus_prefix","audio_prefix","vi_prefix"};
+	std::vector<std::string> ln = { "faderport","start_track","bus_prefix","audio_prefix","vi_prefix","start_bus","track_fix","mcp_mode", "follow"};
 
 	// Open the config file for reading
 	std::ifstream f_in(fullpath);
@@ -1824,7 +1929,7 @@ void CSurf_Faderport::LoadConfig(char* pfilename) {
 		cout << "Error reading file !" << endl;
 	else
 	{
-		CFG::ReadFile(f_in, ln, faderport, start_track, bus_prefix, audio_prefix, vi_prefix);
+		CFG::ReadFile(f_in, ln, faderport, start_track, bus_prefix, audio_prefix, vi_prefix, start_bus, track_fix, mcp_mode, follow);
 		f_in.close();
 	}
 }

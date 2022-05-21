@@ -100,9 +100,6 @@ public:
 	void SetPrevNextOffset(int state) { m_prevnext_offset = state; }
 	int GetPrevNextOffset() { return m_prevnext_offset; }
 
-	void SetSpreadPrevNextOffset(int state) { m_prevnext_offset = state; }
-	int GetSpreadPrevNextOffset() { return m_prevnext_offset; }
-
 	void SetSurfaceSize(int state) { m_surface_size = state; }
 	int GetSurfaceSize() { return m_surface_size; }
 
