@@ -6,7 +6,6 @@
     <ClCompile Include="..\..\Source\csurf\TrackIterator.cpp" />
     <ClCompile Include="..\..\Source\csurf\faderport_states.cpp" />
     <ClCompile Include="..\..\Source\csurf\faderport_functions.cpp" />
-    <ClCompile Include="..\..\Source\csurf\csurf_mcu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\csurf\TrackIterator.h">

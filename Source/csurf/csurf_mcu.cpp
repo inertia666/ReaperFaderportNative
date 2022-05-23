@@ -1699,12 +1699,12 @@ static WDL_DLGRET dlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				if (x == parms[3]) SendDlgItemMessage(hwndDlg, IDC_COMBO3, CB_SETCURSEL, a, 0);
 			}
 		}
-		SetDlgItemInt(hwndDlg, IDC_EDIT1, parms[0], TRUE);
-		SetDlgItemInt(hwndDlg, IDC_EDIT2, parms[1], FALSE);
-		if (parms[4] & CONFIG_FLAG_FADER_TOUCH_MODE)
-			CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
-		if (parms[4] & CONFIG_FLAG_MAPF1F8TOMARKERS)
-			CheckDlgButton(hwndDlg, IDC_CHECK2, BST_CHECKED);
+		//SetDlgItemInt(hwndDlg, IDC_EDIT1, parms[0], TRUE);
+		//SetDlgItemInt(hwndDlg, IDC_EDIT2, parms[1], FALSE);
+		//if (parms[4] & CONFIG_FLAG_FADER_TOUCH_MODE)
+		//	CheckDlgButton(hwndDlg, IDC_CHECK1, BST_CHECKED);
+		//if (parms[4] & CONFIG_FLAG_MAPF1F8TOMARKERS)
+		//	CheckDlgButton(hwndDlg, IDC_CHECK2, BST_CHECKED);
 	}
 	break;
 	case WM_USER + 1024:

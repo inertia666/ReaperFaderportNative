@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -8,17 +8,16 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "afxres.h"
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -26,59 +25,50 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE
+1 TEXTINCLUDE 
 BEGIN
-"resource.h\0"
+    "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE
+2 TEXTINCLUDE 
 BEGIN
-"#include ""afxres.h""\r\n"
-"\0"
+    "#include ""afxres.h""\r\n"
+    "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE
+3 TEXTINCLUDE 
 BEGIN
-"\r\n"
-"\0"
+    "\r\n"
+    "\0"
 END
 
 #endif    // APSTUDIO_INVOKED
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_SURFACEEDIT_MCU DIALOG DISCARDABLE  0, 0, 268, 77
-STYLE DS_CENTER | WS_CHILD
-FONT 8, "MS Shell Dlg"
+IDD_SURFACEEDIT_MCU1 DIALOGEX 0, 0, 336, 224
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_CHILD
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
-RTEXT           "MIDI input:", IDC_STATIC, 23, 6, 56, 8
-COMBOBOX        IDC_COMBO2, 81, 4, 181, 105, CBS_DROPDOWNLIST | WS_VSCROLL |
-WS_TABSTOP
-RTEXT           "MIDI output:", IDC_STATIC, 23, 23, 56, 8
-COMBOBOX        IDC_COMBO3, 81, 21, 181, 105, CBS_DROPDOWNLIST | WS_VSCROLL |
-WS_TABSTOP
-RTEXT           "Surface offset (tracks):", IDC_EDIT1_LBL, 4, 42, 72, 8
-EDITTEXT        IDC_EDIT1, 81, 41, 24, 12, ES_AUTOHSCROLL
-RTEXT           "Size tweak:", IDC_EDIT2_LBL, 30, 58, 47, 8
-EDITTEXT        IDC_EDIT2, 80, 55, 24, 12, ES_AUTOHSCROLL
-LTEXT           "(leave at 9 unless you know what you're doing)",
-IDC_EDIT2_LBL2, 108, 58, 148, 8
+    RTEXT           "MIDI input:",IDC_STATIC,23,6,56,8
+    COMBOBOX        IDC_COMBO2,81,4,181,105,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "MIDI output:",IDC_STATIC,23,23,56,8
+    COMBOBOX        IDC_COMBO3,81,21,181,105,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Config:",IDC_STATIC,53,44,24,8
+    EDITTEXT        IDC_EDITCONFIG,81,42,181,14,ES_AUTOHSCROLL
+    CONTROL         "8",IDC_RADIOFP8,"Button",BS_AUTORADIOBUTTON | WS_GROUP,62,72,20,10
+    CONTROL         "16",IDC_RADIOFP16,"Button",BS_AUTORADIOBUTTON | WS_GROUP,111,71,24,10
+    GROUPBOX        "Faderport:",IDGROUPFP,47,59,213,27
+    LTEXT           "Bus prefix:",IDC_STATIC,37,103,36,8
+    EDITTEXT        IDC_EDITBUS,77,99,181,14,ES_AUTOHSCROLL
+    LTEXT           "Audio prefix:",IDC_STATIC,37,124,42,8
+    EDITTEXT        IDC_EDITBUS2,77,120,181,14,ES_AUTOHSCROLL
 END
 
-IDD_SURFACEEDIT_MCU1 DIALOG DISCARDABLE  0, 0, 268, 95
-STYLE DS_CENTER | WS_CHILD
-FONT 8, "MS Shell Dlg"
-BEGIN
-RTEXT           "MIDI input:", IDC_STATIC, 23, 6, 56, 8
-COMBOBOX        IDC_COMBO2, 81, 4, 181, 105, CBS_DROPDOWNLIST | WS_VSCROLL |
-WS_TABSTOP
-RTEXT           "MIDI output:", IDC_STATIC, 23, 23, 56, 8
-COMBOBOX        IDC_COMBO3, 81, 21, 181, 105, CBS_DROPDOWNLIST | WS_VSCROLL |
-WS_TABSTOP
-END
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -86,28 +76,33 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE
+GUIDELINES DESIGNINFO
 BEGIN
-IDD_SURFACEEDIT_MCU, DIALOG
-BEGIN
-LEFTMARGIN, 4
-RIGHTMARGIN, 264
-TOPMARGIN, 4
-BOTTOMMARGIN, 73
-END
-
-IDD_SURFACEEDIT_MCU1, DIALOG
-BEGIN
-LEFTMARGIN, 4
-RIGHTMARGIN, 264
-TOPMARGIN, 4
-BOTTOMMARGIN, 91
-END
+    IDD_SURFACEEDIT_MCU1, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 332
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 99
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
+
 /////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SURFACEEDIT_MCU1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
 
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -115,5 +110,7 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
+

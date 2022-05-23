@@ -1690,8 +1690,8 @@ bool CSurf_Faderport::isVITrack(MediaTrack* track) {
 
 #pragma region init
 // Constructor/Initialise
-CSurf_Faderport::CSurf_Faderport(int indev, int outdev, int* errStats) {
-	LoadConfig("config.txt");
+CSurf_Faderport::CSurf_Faderport(int indev, int outdev, std::string configfile, int* errStats) {
+	LoadConfig(configfile);
 	m_surfaceState.SetSurfaceId(0);
 
 	int isfp8 = faderport == 8 ? 1 : 0;
@@ -1885,10 +1885,10 @@ void CSurf_Faderport::ScheduleAction(DWORD time, ScheduleFunc func) {
 
 static IReaperControlSurface* createFunc(const char* type_string, const char* configString, int* errStats)
 {
-	int parms[2];
+	std::string parms[3];
 	parseParms(configString, parms);
 
-	return new CSurf_Faderport(parms[0], parms[1], errStats);
+	return new CSurf_Faderport(std::stoi(parms[0]), std::stoi(parms[1]), parms[2],errStats);
 }
 
 static HWND configFunc(const char* type_string, HWND parent, const char* initConfigString)
@@ -1904,7 +1904,7 @@ reaper_csurf_reg_t csurf_faderport_reg =
   configFunc,
 };
 
-void CSurf_Faderport::LoadConfig(char* pfilename) {
+void CSurf_Faderport::LoadConfig(std::string pfilename) {
 	start_track = 1;
 	start_bus = 0;
 	mcp_mode = 0;

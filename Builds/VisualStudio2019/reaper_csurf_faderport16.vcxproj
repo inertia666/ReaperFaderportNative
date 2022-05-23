@@ -38,7 +38,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\csurf\csurf_faderport16.cpp" />
     <ClCompile Include="..\..\Source\csurf\csurf_main.cpp" />
-    <ClCompile Include="..\..\Source\csurf\csurf_mcu.cpp" />
     <ClCompile Include="..\..\Source\csurf\faderport_functions.cpp" />
     <ClCompile Include="..\..\Source\csurf\faderport_states.cpp" />
     <ClCompile Include="..\..\Source\csurf\TrackIterator.cpp" />

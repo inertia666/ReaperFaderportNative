@@ -244,10 +244,10 @@ public:
 	const char* GetDescString() override;
 	const char* GetConfigString() override;
 
-	CSurf_Faderport(int indev, int outdev, int* errStats);
+	CSurf_Faderport(int indev, int outdev, std::string configfile, int* errStats);
 	~CSurf_Faderport();
 
-	void LoadConfig(char* filename);
+	void LoadConfig(std::string filename);
 
 	int start_track; // track offset
 	int start_bus; // start in bus mode
